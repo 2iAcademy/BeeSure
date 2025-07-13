@@ -1,0 +1,17 @@
+name: CI/CD-Dev-Staging
+
+on:
+  push:
+    branches: [ "staging" ]
+  pull_request:
+    branches: [ "staging" ]
+  # Exécution manuelle depuis l’onglet Actions
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Echo message
+        run: echo "Déploiement sur la branche ${{ github.ref_name }}"
