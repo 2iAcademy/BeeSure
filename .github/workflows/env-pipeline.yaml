@@ -13,4 +13,4 @@ jobs:
 
     steps:
       - name: Echo message
-        run: echo "changement de dev et push sur prod pas la branche ${{ github.ref_name }}"
+        run: echo "commit sur dev et push sur la branch ${{ github.ref_name }}"
