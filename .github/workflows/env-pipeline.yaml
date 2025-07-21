@@ -10,7 +10,30 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Echo message
-        run: echo "commit sur dev et push sur la branch ${{ github.ref_name }}"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        witch:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+         echo "Install dependencies  (env DEV)
+         npm install
+
+      - name: Build App Angular
+        run: |
+         echo "Build App Angular (env DEV)
+         npm run build 
+        
+
+      - name: Angular Tests
+        run: |
+          echo "Lancement des tests d'Angular (env DEV)
+          ng test 
+
+      - name: Clean pipeline
+        run: clean
