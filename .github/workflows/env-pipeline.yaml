@@ -27,8 +27,7 @@ jobs:
       - name: Build App Angular
         run: |
          echo "Build App Angular (env DEV)"
-         npm run build 
-        
+         ng build 
 
       - name: Angular Tests
         run: |
