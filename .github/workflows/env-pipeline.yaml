@@ -19,6 +19,9 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Setup Angular
+        run: npm install -g @angular/cli -Y
+
       - name: Install dependencies
         run: |
          echo "Install dependencies  (env DEV)"
@@ -34,5 +37,4 @@ jobs:
           echo "Lancement des tests d'Angular (env DEV)"
           ng test 
 
-      - name: Clean pipeline
-        run: clean
+
