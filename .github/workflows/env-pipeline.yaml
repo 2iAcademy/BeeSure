@@ -25,6 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
          echo "Install dependencies  (env DEV)"
+         echo "workspace github  " ${{GITHUB_WORKSPACE}} 
          npm install
 
       - name: Build App Angular
