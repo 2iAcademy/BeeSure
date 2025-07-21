@@ -16,7 +16,7 @@ jobs:
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
-        witch:
+        with:
           node-version: '20'
 
       - name: Install dependencies
