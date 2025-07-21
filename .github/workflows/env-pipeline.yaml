@@ -21,18 +21,18 @@ jobs:
 
       - name: Install dependencies
         run: |
-         echo "Install dependencies  (env DEV)
+         echo "Install dependencies  (env DEV)"
          npm install
 
       - name: Build App Angular
         run: |
-         echo "Build App Angular (env DEV)
+         echo "Build App Angular (env DEV)"
          npm run build 
         
 
       - name: Angular Tests
         run: |
-          echo "Lancement des tests d'Angular (env DEV)
+          echo "Lancement des tests d'Angular (env DEV)"
           ng test 
 
       - name: Clean pipeline
