@@ -20,7 +20,7 @@ jobs:
           node-version: '20'
 
       - name: Setup Angular
-        run: npm install -g @angular/cli -Y
+        run: npm install -g @angular/cli
 
       - name: Install dependencies
         run: |
@@ -29,12 +29,14 @@ jobs:
 
       - name: Build App Angular
         run: |
-         echo "Build App Angular (env DEV)"
-         ng build 
+          echo "Build App Angular (env DEV)"
+          cd $GITHUB_WORKSPACE
+          ng build 
 
       - name: Angular Tests
         run: |
           echo "Lancement des tests d'Angular (env DEV)"
-          ng test 
+          cd $GITHUB_WORKSPACE
+          ng test --watch=false --browsers=ChromeHeadless
 
 
