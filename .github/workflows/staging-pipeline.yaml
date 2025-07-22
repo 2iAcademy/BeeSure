@@ -9,9 +9,34 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Echo message
-        run: echo "Déploiement sur la branche ${{ github.ref_name }}"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: apps/api/package-lock.json
+
+      - name: Install API dependencies
+        run: cd apps/api && npm ci
+
+      - name: Run API tests
+        run: cd apps/api && npm test
+
+      - name: Run API e2e tests
+        run: cd apps/api && npm run test:e2e
+
+      - name: Run API linting
+        run: cd apps/api && npm run lint
+
+      - name: Build API
+        run: cd apps/api && npm run build
+
+      - name: Echo deployment message
+        run: echo "Tests réussis - Déploiement sur la branche ${{ github.ref_name }}"

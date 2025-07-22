@@ -11,26 +11,34 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test-and-deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Echo message
-        run: echo "Déploiement sur la branche prod"
-        
-    # The type of runner that the job will run on
-    #runs-on: ubuntu-latest
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
-   # steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    #  - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: apps/api/package-lock.json
 
-      # Runs a single command using the runners shell
-   #   - name: Run a one-line script
-    #    run: echo Hello, world!
+      - name: Install API dependencies
+        run: cd apps/api && npm ci
 
-      # Runs a set of commands using the runners shell
-     # - name: Run a multi-line script
-    #    run: |
-     #     echo Add other actions to build,
-      #    echo test, and deploy your project.
+      - name: Run API tests
+        run: cd apps/api && npm test
+
+      - name: Run API e2e tests
+        run: cd apps/api && npm run test:e2e
+
+      - name: Run API linting
+        run: cd apps/api && npm run lint
+
+      - name: Build API for production
+        run: cd apps/api && npm run build
+
+      - name: Echo deployment message
+        run: echo "Tests réussis - Déploiement en production sur la branche ${{ github.ref_name }}"
