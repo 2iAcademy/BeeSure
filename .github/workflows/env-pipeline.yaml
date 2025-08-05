@@ -23,19 +23,19 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Setup Angular
-        run: npm install -g @angular/cli
-
       - name: Install dependencies
         run: |
          echo "Install dependencies  (env DEV)"
           echo "GitHub Workspace: $GITHUB_WORKSPACE"
          npm install
 
+      - name: Lint
+        run: npm lint
+
       - name: Build App Angular
         run: |
           echo "Build App Angular (env DEV)"
-          cd $GITHUB_WORKSPACE
+          echo "GitHub Workspace: $GITHUB_WORKSPACE"
           npm run build 
 
       - name: Angular Tests
