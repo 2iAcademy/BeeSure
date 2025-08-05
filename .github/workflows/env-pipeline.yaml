@@ -32,12 +32,13 @@ jobs:
         run: |
           echo "Build App Angular (env DEV)"
           cd $GITHUB_WORKSPACE
-          ng build 
+          npm run build 
 
       - name: Angular Tests
         run: |
           echo "Lancement des tests d'Angular (env DEV)"
           cd $GITHUB_WORKSPACE
-          ng test --watch=false --browsers=ChromeHeadless
+          npm run test --watch=false --browsers=ChromeHeadless
 
-
+      - name: Echo message
+        run: echo "Tests terminés sur la branche ${{ github.ref_name }}"
