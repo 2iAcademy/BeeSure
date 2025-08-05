@@ -10,6 +10,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: BeeSure
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
