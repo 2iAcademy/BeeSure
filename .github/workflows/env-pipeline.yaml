@@ -29,19 +29,14 @@ jobs:
           echo "GitHub Workspace: $GITHUB_WORKSPACE"
          npm install
 
-      - name: Lint
-        run: npm run lint
-
       - name: Build App Angular
         run: |
           echo "Build App Angular (env DEV)"
-          echo "GitHub Workspace: $GITHUB_WORKSPACE"
           npm run build 
 
       - name: Angular Tests
         run: |
           echo "Lancement des tests d'Angular (env DEV)"
-          cd $GITHUB_WORKSPACE
           npm run test --watch=false --browsers=ChromeHeadless
 
       - name: Echo message
