@@ -31,6 +31,7 @@ Le projet BeeSure s'appuie sur une stack technologique moderne pour assurer perf
 - npm ou yarn
 - Angular CLI
 - NestJS CLI
+- Chrome (instaler dans votre environement de travail)
 
 ### Récupération du code
 ```bash
