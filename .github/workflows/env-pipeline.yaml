@@ -29,10 +29,8 @@ jobs:
           echo "GitHub Workspace: $GITHUB_WORKSPACE"
          npm install
           
-      - name: Install Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
+      - name: Setup Chrome
+        uses: browser-actions/setup-chrome@latest
 
       - name: Build App Angular
         run: |
