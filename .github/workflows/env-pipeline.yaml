@@ -23,16 +23,11 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Verify directory structure
-        run: |
-             echo "Listing files in the workspace:"
-             ls -R $GITHUB_WORKSPACE
-
       - name: Install dependencies
         run: |
          echo "Install dependencies  (env DEV)"
-          echo "GitHub Workspace: $GITHUB_WORKSPACE"
          npm install
+         npm audit fix --force
           
       - name: Setup Chrome
         uses: browser-actions/setup-chrome@latest
