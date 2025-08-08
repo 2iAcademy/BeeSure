@@ -8,11 +8,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  test-dashboard:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: BeeSure
+        working-directory: dashboard
 
     steps:
       - name: Checkout code
@@ -43,6 +43,37 @@ jobs:
         run: |
           echo "Lancement des tests d'Angular (env DEV)"
           npm run test --no-watch --no-progress --browsers=ChromeHeadless
+
+      - name: Echo message
+        run: echo "Tests terminés sur la branche ${{ github.ref_name }}"
+
+  test-api:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Checkout code
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: apps/api/package-lock.json
+      - name: Install API dependencies
+        run: cd apps/api && npm ci
+
+      - name: Run API tests
+        run: cd apps/api && npm test
+
+      - name: Run API e2e tests
+        run: cd apps/api && npm run test:e2e
+
+      - name: Run API linting
+        run: cd apps/api && npm run lint
+
+      - name: Build API
+        run: cd apps/api && npm run build
 
       - name: Echo message
         run: echo "Tests terminés sur la branche ${{ github.ref_name }}"

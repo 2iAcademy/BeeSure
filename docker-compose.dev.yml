@@ -1,14 +1,29 @@
 services:
-
   postgres:
+    image: postgis/postgis:17-3.5-alpine
+    container_name: beesure_postgres_dev
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-beesure}
+      POSTGRES_USER: ${POSTGRES_USER:-beesure_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-secret}
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
       - "5432:5432"
-  
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+
   mongodb:
+    image: mongo:8.0.11
+    container_name: beesure_mongodb_dev
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-secret}
+      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-beesure}
     ports:
       - "27017:27017"
+    volumes:
+      - mongodb_dev_data:/data/db
 
-  liquibase:
-    depends_on:
-      postgres:
-        condition: service_healthy
+volumes:
+  postgres_dev_data:
+  mongodb_dev_data:

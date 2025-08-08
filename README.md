@@ -6,7 +6,7 @@ App de déclaration d'incident
 Le projet BeeSure s'appuie sur une stack technologique moderne pour assurer performance, évolutivité et robustesse :
 
 ### Frontend
-- **Flutter** – Framework UI de Google pour le développement d'applications mobiles multiplateformes (Android/iOS)
+- **Flutter** – Framework UI de Google pour le développement d'applications mobiles multiplateformes (Android/iOS) - [Guide d'installation Flutter](apps/mobile_app/README.md)
 - **Angular** – Framework front-end web open-source pour l'application web
 - **TypeScript** – Langage de programmation avec typage statique
 
@@ -31,6 +31,7 @@ Le projet BeeSure s'appuie sur une stack technologique moderne pour assurer perf
 - npm ou yarn
 - Angular CLI
 - NestJS CLI
+- Chrome (instaler dans votre environement de travail)
 
 ### Récupération du code
 ```bash
