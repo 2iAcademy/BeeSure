@@ -1,9 +1,9 @@
 FROM apache/spark:4.0.0-java21-python3
 
-WORKDIR /app
+WORKDIR /data
 
-COPY requirements.txt /app/
-COPY functionel_predict_incident_by_week.py /app/
+COPY ./spark/requirements.txt /data/
+COPY ./spark/predict_incident_by_week.py /data/
 
 # Installer les dépendances Python
 USER root
