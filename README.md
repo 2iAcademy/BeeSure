@@ -49,7 +49,7 @@ cd beesure
 npm install
 
 # 2 Lancer le projet: 
-ng server
+ng serve
 ```
 Ouvrez votre navigateur et rendez-vous sur Local:   http://localhost:4200/.
 La page de l'application doit s'ouvrire.
