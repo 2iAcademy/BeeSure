@@ -16,11 +16,8 @@ fi
 echo "Nettoyage des conteneurs orphelins..."
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml down --remove-orphans > /dev/null 2>&1
 
-echo "Démarrage des bases de données..."
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d postgres mongodb
-
-echo "Lancement des migrations Liquibase..."
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up liquibase
+echo "Nettoyage des conteneurs orphelins..."
+docker compose -f docker-compose.dev.yml up -d --build
 
 if [ $? -eq 0 ]; then
     echo "Migrations appliquées avec succès"
