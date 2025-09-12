@@ -43,7 +43,20 @@ cd beesure
 
 ### Démarrage rapide
 ```bash
-# 1. Démarrer les bases de données
+#Dans le dossier Angular taper les commandes suivantes:
+
+# 1. Installation d'Angular:
+npm install
+
+# 2 Lancer le projet: 
+ng serve
+```
+Ouvrez votre navigateur et rendez-vous sur Local:   http://localhost:4200/.
+La page de l'application doit s'ouvrire.
+
+### Démarrage rapide
+```bash
+# 2. Démarrer les bases de données
 ./scripts/dev.sh
 ```
 

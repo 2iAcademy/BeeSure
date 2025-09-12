@@ -7,8 +7,9 @@
 .buildlog/
 .history
 .idea/
+.vscode
+node_modules
 .jpg
-
 
 # Flutter repo-specific
 /bin/cache/
