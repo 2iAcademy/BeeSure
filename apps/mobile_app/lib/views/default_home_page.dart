@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import '/core/config/app_config.dart';
 import '/views/login_page.dart';
+import '/views/signup_page.dart';
 
 
 class MyHomePage extends StatefulWidget {
@@ -37,7 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
-  Widget buton_co(BuildContext context) {
+  Widget Login_button(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
         Navigator.push(
@@ -50,6 +51,22 @@ class _MyHomePageState extends State<MyHomePage> {
         fontSize: 28,
         color: Colors.red,
       )),
+    );
+  }
+
+  Widget Signup_button(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SignupPage()),
+        );
+      },
+      child: const Text("Créer ton compte ! ",
+          style: TextStyle(
+            fontSize: 28,
+            color: Colors.purple,
+          )),
     );
   }
 
@@ -99,8 +116,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
               textAlign: TextAlign.center,),
 
+            const SizedBox(height: 50),
+            Login_button(context),
+
             const SizedBox(height: 50), // Espacement
-            buton_co(context), // Appel du bouton
+            Signup_button(context), // Appel du bouton
           ],
         ),
       ),

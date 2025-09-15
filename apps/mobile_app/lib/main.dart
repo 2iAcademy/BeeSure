@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'core/config/app_config.dart';
-import 'views/login_page.dart';
 import 'views/default_home_page.dart';
 
 
@@ -22,6 +21,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      
       title: 'BeeSure Mobile',
       theme: ThemeData(
         // This is the theme of your application.

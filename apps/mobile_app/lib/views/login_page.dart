@@ -7,6 +7,7 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+
         title: const Text("Connexion"),
         backgroundColor: Colors.transparent,
         elevation: 0, // Supprime l'ombre pour un look épuré
