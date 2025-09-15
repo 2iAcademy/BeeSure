@@ -46,10 +46,10 @@ class _MyHomePageState extends State<MyHomePage> {
           MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       },
-      child: const Text("Connect toi ! ou meurs dans l'heurs !",
+      child: const Text("Connect toi !",
           style: TextStyle(
         fontSize: 28,
-        color: Colors.red,
+        color: Colors.green,
       )),
     );
   }
