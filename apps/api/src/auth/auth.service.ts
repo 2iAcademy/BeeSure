@@ -13,7 +13,6 @@ import { TOKEN_TYPES } from '../common/constants/app.constants';
 
 export interface JwtPayload {
   sub: string;
-  email: string;
   roles: string[];
   type: 'access' | 'refresh';
 }
@@ -130,7 +129,6 @@ export class AuthService {
 
     const payload: Omit<JwtPayload, 'type'> = {
       sub: user.id,
-      email: user.email,
       roles: user.roles,
     };
 
@@ -163,7 +161,6 @@ export class AuthService {
         id: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
-        email: user.email,
         roles: user.roles,
       },
     };
