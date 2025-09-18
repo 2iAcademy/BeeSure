@@ -14,6 +14,12 @@ async function bootstrap() {
     }),
   );
 
+  app.enableCors({
+      origin: 'http://localhost:39407',
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+  });
+
   const config = new DocumentBuilder()
     .setTitle('BeeSure API')
     .setDescription('API de sécurité avec authentification JWT')

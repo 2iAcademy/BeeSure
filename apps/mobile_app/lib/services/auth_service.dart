@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 
 class AuthService {
   final String _baseUrl = dotenv.get('API_BASE_URL'); // Remplace par ton URL d'API
-  final String? _apiKey = dotenv.get('API_KEY'); // Récupère la clé API depuis .env
+  //final String? _apiKey = dotenv.get('API_KEY'); // Récupère la clé API depuis .env
 
   // Méthode pour se connecter
   Future<Map<String, dynamic>> login(String email, String password) async {
@@ -13,10 +13,10 @@ class AuthService {
         Uri.parse('$_baseUrl/auth/login'),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_apiKey',
+         // 'Authorization': 'Bearer $_apiKey',
         },
         body: jsonEncode({
-          'email': email,
+          'identifier': email,
           'password': password,
         }),
       );
@@ -47,7 +47,7 @@ class AuthService {
         Uri.parse('$_baseUrl/auth/signup'),
         headers: {
           'Content-Type': 'application/json',
-         'Authorization': 'Bearer $_apiKey',
+         //'Authorization': 'Bearer $_apiKey',
         },
         body: jsonEncode({
           'firstName': firstName,

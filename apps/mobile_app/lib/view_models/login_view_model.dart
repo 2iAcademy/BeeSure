@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-
+import '../views//success_page.dart';
 class LoginViewModel with ChangeNotifier {
   final AuthService _authService = AuthService();
   final TextEditingController emailController = TextEditingController();
@@ -37,7 +37,7 @@ class LoginViewModel with ChangeNotifier {
       _passwordError = "Le mot de passe est obligatoire";
       isValid = false;
     } else if (passwordController.text.length < 6) {
-      _passwordError = "Le mot de passe est incorècte";
+      _passwordError = "Le mot de passe est incorècte (min 6 caractère)";
       isValid = false;
     }
 
@@ -64,7 +64,10 @@ class LoginViewModel with ChangeNotifier {
       // await _authService.saveToken(result['data']['token']);
 
       // Redirection vers la page d'accueil
-      Navigator.pushReplacementNamed(context, '/home');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => SuccessPage()),
+      );
     } else {
       _errorMessage = result['message'];
       notifyListeners();
