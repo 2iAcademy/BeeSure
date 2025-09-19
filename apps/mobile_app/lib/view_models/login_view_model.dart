@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import '../views//success_page.dart';
+import '../views/success_page.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 class LoginViewModel with ChangeNotifier {
   final AuthService _authService = AuthService();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
+  final _storage = const FlutterSecureStorage();
 
   // État du formulaire
   bool _isLoading = false;
@@ -47,6 +50,7 @@ class LoginViewModel with ChangeNotifier {
 
   // Méthode pour se connecter
   Future<void> login(BuildContext context) async {
+
     if (!_validateFields()) return;
 
     _isLoading = true;
@@ -61,7 +65,10 @@ class LoginViewModel with ChangeNotifier {
     _isLoading = false;
     if (result['success']) {
       // Sauvegarder le token si nécessaire
-      // await _authService.saveToken(result['data']['token']);
+      final String accessTokenAPI = result['data']['accessToken'];
+      final String refreshTokenAPI = result['data']['refreshToken'];
+      await _storage.write(key: 'accessToken', value: accessTokenAPI);
+      await _storage.write(key: 'refreshToken', value: refreshTokenAPI);
 
       // Redirection vers la page d'accueil
       Navigator.pushReplacement(
