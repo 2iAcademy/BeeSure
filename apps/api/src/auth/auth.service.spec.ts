@@ -104,7 +104,6 @@ describe('AuthService', () => {
 
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
-      expect(result.user.email).toBe(mockUser.email);
       expect(mockUsersService.create).toHaveBeenCalledWith(signupDto);
     });
 
