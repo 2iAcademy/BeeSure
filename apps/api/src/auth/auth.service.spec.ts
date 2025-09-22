@@ -9,9 +9,6 @@ import { UserRoles } from '../common/enums/user-roles.enum';
 
 describe('AuthService', () => {
   let authService: AuthService;
-  let usersService: UsersService;
-  let jwtService: JwtService;
-  let configService: ConfigService;
 
   const mockUser: User = {
     id: 'test-uuid',
@@ -67,20 +64,19 @@ describe('AuthService', () => {
     }).compile();
 
     authService = module.get<AuthService>(AuthService);
-    usersService = module.get<UsersService>(UsersService);
-    jwtService = module.get<JwtService>(JwtService);
-    configService = module.get<ConfigService>(ConfigService);
 
     // Setup default config mocks
-    mockConfigService.get.mockImplementation((key: string, defaultValue?: any) => {
-      const config = {
-        'JWT_ACCESS_SECRET': 'test-access-secret',
-        'JWT_REFRESH_SECRET': 'test-refresh-secret',
-        'JWT_ACCESS_EXPIRES_IN': '15m',
-        'JWT_REFRESH_EXPIRES_IN': '7d',
-      };
-      return config[key] || defaultValue;
-    });
+    mockConfigService.get.mockImplementation(
+      (key: string, defaultValue?: string) => {
+        const config = {
+          JWT_ACCESS_SECRET: 'test-access-secret',
+          JWT_REFRESH_SECRET: 'test-refresh-secret',
+          JWT_ACCESS_EXPIRES_IN: '15m',
+          JWT_REFRESH_EXPIRES_IN: '7d',
+        };
+        return (config as Record<string, string>)[key] || defaultValue;
+      },
+    );
   });
 
   afterEach(() => {
@@ -108,7 +104,9 @@ describe('AuthService', () => {
     });
 
     it('should throw ConflictException if user creation fails', async () => {
-      mockUsersService.create.mockRejectedValue(new ConflictException('User exists'));
+      mockUsersService.create.mockRejectedValue(
+        new ConflictException('User exists'),
+      );
 
       await expect(authService.signup(signupDto)).rejects.toThrow(
         ConflictException,
