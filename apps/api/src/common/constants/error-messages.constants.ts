@@ -23,14 +23,15 @@ export const USER_MESSAGES = {
   USER_PHONE_EXISTS: 'Un utilisateur avec ce téléphone existe déjà',
   UPDATE_ERROR: 'Erreur lors de la mise à jour',
   PASSWORD_REQUIRED: 'Le mot de passe est obligatoire',
-  EMAIL_REQUIRED: 'L\'email est obligatoire',
+  EMAIL_REQUIRED: "L'email est obligatoire",
   PHONE_REQUIRED: 'Le téléphone est obligatoire',
 } as const;
 
 export const VALIDATION_MESSAGES = {
-  INVALID_EMAIL: 'Format d\'email invalide',
+  INVALID_EMAIL: "Format d'email invalide",
   INVALID_PHONE: 'Format de téléphone invalide',
   PASSWORD_TOO_SHORT: 'Le mot de passe doit contenir au moins 8 caractères',
-  PASSWORD_TOO_WEAK: 'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre',
+  PASSWORD_TOO_WEAK:
+    'Le mot de passe doit contenir au moins une majuscule, une minuscule et un chiffre',
   REQUIRED_FIELD: 'Ce champ est obligatoire',
 } as const;

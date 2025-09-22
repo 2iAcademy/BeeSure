@@ -1,4 +1,10 @@
-import { ConflictException, Injectable, Logger, UnauthorizedException, BadRequestException, } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  Logger,
+  UnauthorizedException,
+  BadRequestException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../users/users.service';
@@ -9,7 +15,6 @@ import { VerifyPhoneDto } from './dto/verify-phone.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { AUTH_MESSAGES } from '../common/constants/error-messages.constants';
 import { TOKEN_TYPES } from '../common/constants/app.constants';
-
 
 export interface JwtPayload {
   sub: string;
@@ -31,12 +36,18 @@ export class AuthService {
     const { email, phone, ...userData } = signupDto;
 
     try {
-      const user = await this.usersService.create({ email, phone, ...userData });
+      const user = await this.usersService.create({
+        email,
+        phone,
+        ...userData,
+      });
       this.logger.log(`New user created with ID: ${user.id}`);
       return this.generateTokens(user);
     } catch (error) {
       if (error instanceof ConflictException) {
-        this.logger.warn(`Signup attempt with existing email/phone: ${email}/${phone}`);
+        this.logger.warn(
+          `Signup attempt with existing email/phone: ${email}/${phone}`,
+        );
         throw new ConflictException(AUTH_MESSAGES.USER_EXISTS);
       }
       throw error;
@@ -74,7 +85,8 @@ export class AuthService {
 
   async refreshTokens(refreshToken: string): Promise<AuthResponseDto> {
     try {
-      const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
+      const refreshSecret =
+        this.configService.get<string>('JWT_REFRESH_SECRET');
       if (!refreshSecret) {
         throw new Error('JWT_REFRESH_SECRET environment variable is required');
       }
@@ -102,7 +114,9 @@ export class AuthService {
 
       return this.generateTokens(user);
     } catch (error) {
-      this.logger.warn(`Failed to refresh token: ${error.message}`);
+      this.logger.warn(
+        `Failed to refresh token: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       throw new UnauthorizedException(AUTH_MESSAGES.TOKEN_EXPIRED);
     }
   }
@@ -120,8 +134,12 @@ export class AuthService {
   private async generateTokens(user: User): Promise<AuthResponseDto> {
     const accessSecret = this.configService.get<string>('JWT_ACCESS_SECRET');
     const refreshSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
-    const accessExpiresIn = this.configService.get<string>('JWT_ACCESS_EXPIRES_IN');
-    const refreshExpiresIn = this.configService.get<string>('JWT_REFRESH_EXPIRES_IN');
+    const accessExpiresIn = this.configService.get<string>(
+      'JWT_ACCESS_EXPIRES_IN',
+    );
+    const refreshExpiresIn = this.configService.get<string>(
+      'JWT_REFRESH_EXPIRES_IN',
+    );
 
     if (!accessSecret || !refreshSecret) {
       throw new Error('JWT secrets are required in environment variables');
@@ -174,15 +192,22 @@ export class AuthService {
     const unit = match[2];
 
     switch (unit) {
-      case 's': return value;
-      case 'm': return value * 60;
-      case 'h': return value * 60 * 60;
-      case 'd': return value * 24 * 60 * 60;
-      default: return 15 * 60;
+      case 's':
+        return value;
+      case 'm':
+        return value * 60;
+      case 'h':
+        return value * 60 * 60;
+      case 'd':
+        return value * 24 * 60 * 60;
+      default:
+        return 15 * 60;
     }
   }
 
-  async verifyPhone(verifyPhoneDto: VerifyPhoneDto): Promise<{ message: string }> {
+  async verifyPhone(
+    verifyPhoneDto: VerifyPhoneDto,
+  ): Promise<{ message: string }> {
     const { phone, verificationCode } = verifyPhoneDto;
 
     // Code fixe pour dev/test - en prod il faudrait un vrai système SMS
@@ -193,12 +218,16 @@ export class AuthService {
 
     const user = await this.usersService.findByPhone(phone);
     if (!user) {
-      this.logger.warn(`Phone verification attempt for non-existent phone: ${phone}`);
+      this.logger.warn(
+        `Phone verification attempt for non-existent phone: ${phone}`,
+      );
       throw new BadRequestException(AUTH_MESSAGES.USER_NOT_FOUND);
     }
 
     if (user.phoneVerified) {
-      this.logger.warn(`Phone verification attempt for already verified phone: ${phone}`);
+      this.logger.warn(
+        `Phone verification attempt for already verified phone: ${phone}`,
+      );
       throw new BadRequestException(AUTH_MESSAGES.PHONE_ALREADY_VERIFIED);
     }
 

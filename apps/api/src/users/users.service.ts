@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
@@ -16,9 +20,15 @@ export class UsersService {
     private readonly userRepository: Repository<User>,
     private readonly configService: ConfigService,
   ) {
-    const rounds = this.configService.get('BCRYPT_ROUNDS', 12);
-    this.bcryptRounds = parseInt(rounds as string, 10) || 12;
-    console.log('BCRYPT_ROUNDS configured as:', this.bcryptRounds, 'type:', typeof this.bcryptRounds);
+    const rounds = this.configService.get<number>('BCRYPT_ROUNDS', 12);
+    this.bcryptRounds =
+      typeof rounds === 'string' ? parseInt(rounds, 10) : rounds;
+    console.log(
+      'BCRYPT_ROUNDS configured as:',
+      this.bcryptRounds,
+      'type:',
+      typeof this.bcryptRounds,
+    );
   }
 
   async create(userData: Partial<User>): Promise<User> {
@@ -44,7 +54,10 @@ export class UsersService {
       throw new ConflictException(USER_MESSAGES.USER_PHONE_EXISTS);
     }
 
-    const hashedPassword = await bcrypt.hash(userData.password, this.bcryptRounds);
+    const hashedPassword = await bcrypt.hash(
+      userData.password,
+      this.bcryptRounds,
+    );
 
     const user = this.userRepository.create({
       ...userData,
@@ -70,10 +83,7 @@ export class UsersService {
   async findByEmailOrPhone(identifier: string): Promise<User | null> {
     if (!identifier) return null;
     return this.userRepository.findOne({
-      where: [
-        { email: identifier },
-        { phone: identifier },
-      ],
+      where: [{ email: identifier }, { phone: identifier }],
     });
   }
 
@@ -88,7 +98,7 @@ export class UsersService {
   ): Promise<void> {
     const result = await this.userRepository.update(
       { id: userId },
-      { phoneVerified: verified }
+      { phoneVerified: verified },
     );
 
     if (result.affected === 0) {
@@ -124,7 +134,7 @@ export class UsersService {
   async clearAllRefreshTokens(userId: string): Promise<void> {
     const result = await this.userRepository.update(
       { id: userId },
-      { refreshTokens: [] }
+      { refreshTokens: [] },
     );
 
     if (result.affected === 0) {
@@ -146,7 +156,10 @@ export class UsersService {
     }
 
     if (updateData.password) {
-      updateData.password = await bcrypt.hash(updateData.password, this.bcryptRounds);
+      updateData.password = await bcrypt.hash(
+        updateData.password,
+        this.bcryptRounds,
+      );
     }
 
     await this.userRepository.update({ id: userId }, updateData);
