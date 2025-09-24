@@ -64,7 +64,7 @@ class LoginViewModel with ChangeNotifier {
 
     _isLoading = false;
     if (result['success']) {
-      // Sauvegarder le token si nécessaire
+      // Sauvegarder le token
       final String accessTokenAPI = result['data']['accessToken'];
       final String refreshTokenAPI = result['data']['refreshToken'];
       await _storage.write(key: 'accessToken', value: accessTokenAPI);

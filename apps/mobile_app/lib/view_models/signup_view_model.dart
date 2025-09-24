@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
+import '../views/login_page.dart';
+
 
 class SignupViewModel with ChangeNotifier {
-  // Controllers pour les champs du formulaire
+  final AuthService _authService = AuthService();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -11,6 +14,9 @@ class SignupViewModel with ChangeNotifier {
   // État du formulaire
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
 
   // Erreurs de validation
   String? _firstNameError;
@@ -79,15 +85,26 @@ class SignupViewModel with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // Simulation d'un appel API
-    await Future.delayed(const Duration(seconds: 2));
+    final result = await _authService.signup(
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
+      email: emailController.text,
+      phone: phoneController.text,
+      password: passwordController.text,
+    );
 
-    // Logique d'inscription ici (ex: appel à ton backend)
-    // Exemple : if (email == "test" && password == "test") { ... }
 
     _isLoading = false;
-    notifyListeners();
 
+    if (result['success']) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } else {
+      _errorMessage = result['message'];
+      notifyListeners();
+    }
     // Redirection après inscription réussie
     // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
   }
