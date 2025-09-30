@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "967754581663",
+    "project_id": "beesure-5d7df",
+    "storage_bucket": "beesure-5d7df.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:967754581663:android:15ab0c89a13f2aa7a2c4aa",
+        "android_client_info": {
+          "package_name": "com.besecure.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrxnhlZi6YlC27egxzyv9E7e-PtCBHbqM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
