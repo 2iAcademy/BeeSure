@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { User } from './users/entities/user.entity';
+import { FirebaseModule } from './firebase/firebase.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { User } from './users/entities/user.entity';
     }),
     AuthModule,
     UsersModule,
+    FirebaseModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -6,5 +6,6 @@
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
 
     <include file="changesets/001-enable-postgis.xml" relativeToChangelogFile="true"/>
+    <include file="changesets/002-add-fcm-token-to-users.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

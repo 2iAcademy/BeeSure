@@ -32,7 +32,11 @@ void main() async {
     badge: true,
     sound: true,
   );
-  
+
+  // Initialiser le service FCM
+  final fcmService = FCMService();
+  await fcmService.initialize();
+
   runApp(MyApp());
 }
 

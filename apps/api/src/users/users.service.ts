@@ -169,4 +169,26 @@ export class UsersService {
     }
     return updatedUser;
   }
+
+  async updateFcmToken(userId: string, fcmToken: string): Promise<void> {
+    const user = await this.findById(userId);
+    if (!user) {
+      throw new NotFoundException(USER_MESSAGES.USER_NOT_FOUND);
+    }
+
+    await this.userRepository.update(
+      { id: userId },
+      {
+        fcmToken,
+        fcmTokenUpdatedAt: new Date(),
+      },
+    );
+  }
+
+  async findUsersByIds(userIds: string[]): Promise<User[]> {
+    if (!userIds || userIds.length === 0) {
+      return [];
+    }
+    return this.userRepository.findByIds(userIds);
+  }
 }

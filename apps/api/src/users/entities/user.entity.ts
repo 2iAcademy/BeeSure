@@ -42,6 +42,12 @@ export class User {
   @Exclude()
   refreshTokens: string[];
 
+  @Column({ name: 'fcm_token', nullable: true, length: 255 })
+  fcmToken: string;
+
+  @Column({ name: 'fcm_token_updated_at', type: 'timestamp', nullable: true })
+  fcmTokenUpdatedAt: Date;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
