@@ -1,16 +1,26 @@
 import 'package:flutter/material.dart';
+import '../services/auth_service.dart';
+import '../views/login_page.dart';
+
 
 class SignupViewModel with ChangeNotifier {
-  // Controllers pour les champs du formulaire
+  final AuthService _authService = AuthService();
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController countryCodeController = TextEditingController(text: '+33');
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   // État du formulaire
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+
+  bool _obscurePassword = true;
+  bool get obscurePassword => _obscurePassword;
+
+  String? _errorMessage;
+  String? get errorMessage => _errorMessage;
 
   // Erreurs de validation
   String? _firstNameError;
@@ -79,17 +89,37 @@ class SignupViewModel with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
-    // Simulation d'un appel API
-    await Future.delayed(const Duration(seconds: 2));
+    final result = await _authService.signup(
+      firstName: firstNameController.text,
+      lastName: lastNameController.text,
+      email: emailController.text,
+      phone: '${countryCodeController.text}${phoneController.text}',
+      password: passwordController.text,
+    );
 
-    // Logique d'inscription ici (ex: appel à ton backend)
-    // Exemple : if (email == "test" && password == "test") { ... }
 
     _isLoading = false;
-    notifyListeners();
 
-    // Redirection après inscription réussie
-    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+    if (result['success']) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    } else {
+      _errorMessage = result['message'];
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_errorMessage!),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      notifyListeners();
+    }
+  }
+
+  void togglePasswordVisibility() {
+    _obscurePassword = !_obscurePassword;
+    notifyListeners();
   }
 
   // Nettoyer les controllers
@@ -98,6 +128,7 @@ class SignupViewModel with ChangeNotifier {
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
+    countryCodeController.dispose();
     phoneController.dispose();
     passwordController.dispose();
     super.dispose();

@@ -9,6 +9,7 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { User } from './users/entities/user.entity';
+import { RATE_LIMIT } from './common/constants/app.constants';
 
 @Module({
   imports: [
@@ -31,12 +32,13 @@ import { User } from './users/entities/user.entity';
         logging: configService.get('DATABASE_LOGGING', false),
       }),
     }),
+
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => [
         {
-          ttl: configService.get('THROTTLE_TTL', 60000),
-          limit: configService.get('THROTTLE_LIMIT', 100),
+          ttl: configService.get('THROTTLE_TTL', RATE_LIMIT.GLOBAL_TTL),
+          limit: configService.get('THROTTLE_LIMIT', RATE_LIMIT.AUTH_LIMIT),
         },
       ],
     }),

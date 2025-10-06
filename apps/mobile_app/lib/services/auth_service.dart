@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+
 
 class AuthService {
-  final String _baseUrl = dotenv.get('API_BASE_URL'); // Remplace par ton URL d'API
-  //final String? _apiKey = dotenv.get('API_KEY'); // Récupère la clé API depuis .env
+  final String _baseUrl = dotenv.get('API_BASE_URL');
 
 
   // Méthode pour se connecter
@@ -14,7 +15,6 @@ class AuthService {
         Uri.parse('$_baseUrl/auth/login'),
         headers: {
           'Content-Type': 'application/json',
-         // 'Authorization': 'Bearer $_apiKey',
         },
         body: jsonEncode({
           'identifier': email,
@@ -48,7 +48,7 @@ class AuthService {
         Uri.parse('$_baseUrl/auth/signup'),
         headers: {
           'Content-Type': 'application/json',
-         //'Authorization': 'Bearer $_apiKey',
+          'Content-length': '700'
         },
         body: jsonEncode({
           'firstName': firstName,
@@ -62,10 +62,18 @@ class AuthService {
       if (response.statusCode == 201) {
         final data = jsonDecode(response.body);
         return {'success': true, 'data': data};
-      } else {
+       } else {
         final errorData = jsonDecode(response.body);
-        return {'success': false, 'message': errorData['message'] ?? 'Échec de l\'inscription'};
-      }
+        final message = errorData['message'];
+
+        String messageStr;
+        if (message is List) {
+          messageStr = message.join(', '); // convertit la liste en String
+        } else {
+          messageStr = message?.toString() ?? 'Échec de l\'inscription';
+        }
+
+        return {'success': false, 'message': messageStr};      }
     } catch (e) {
       return {'success': false, 'message': 'Erreur réseau : $e'};
     }
