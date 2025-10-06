@@ -13,7 +13,6 @@ jest.mock('bcrypt');
 describe('UsersService', () => {
   let service: UsersService;
   let userRepository: jest.Mocked<Repository<User>>;
-  let configService: ConfigService;
 
   const mockUser: User = {
     id: 'test-uuid',
@@ -39,10 +38,12 @@ describe('UsersService', () => {
     };
 
     const mockConfigService = {
-      get: jest.fn().mockImplementation((key: string, defaultValue?: any) => {
-        if (key === 'BCRYPT_ROUNDS') return 12;
-        return defaultValue;
-      }),
+      get: jest
+        .fn()
+        .mockImplementation((key: string, defaultValue?: number) => {
+          if (key === 'BCRYPT_ROUNDS') return 12;
+          return defaultValue;
+        }),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -61,7 +62,6 @@ describe('UsersService', () => {
 
     service = module.get<UsersService>(UsersService);
     userRepository = module.get(getRepositoryToken(User));
-    configService = module.get<ConfigService>(ConfigService);
   });
 
   describe('create', () => {
@@ -85,7 +85,7 @@ describe('UsersService', () => {
       expect(user.phoneVerified).toBe(false);
       expect(user.roles).toEqual([UserRoles.USER]);
       expect(bcrypt.hash).toHaveBeenCalledWith('password123', 12);
-      expect(userRepository.save).toHaveBeenCalled();
+      expect(userRepository.save).toHaveBeenCalledWith(expect.any(Object));
     });
 
     it('should throw ConflictException if email already exists', async () => {
@@ -154,7 +154,8 @@ describe('UsersService', () => {
 
   describe('updatePhoneVerification', () => {
     it('should update phone verification status', async () => {
-      userRepository.update.mockResolvedValue({ affected: 1 } as any);
+      const updateResult = { affected: 1, generatedMaps: [], raw: [] };
+      userRepository.update.mockResolvedValue(updateResult);
 
       await service.updatePhoneVerification('test-uuid', true);
 
@@ -165,7 +166,8 @@ describe('UsersService', () => {
     });
 
     it('should throw NotFoundException for non-existent user', async () => {
-      userRepository.update.mockResolvedValue({ affected: 0 } as any);
+      const updateResult = { affected: 0, generatedMaps: [], raw: [] };
+      userRepository.update.mockResolvedValue(updateResult);
 
       await expect(
         service.updatePhoneVerification('non-existent-id', true),

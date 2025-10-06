@@ -15,7 +15,8 @@ import { RATE_LIMIT } from './common/constants/app.constants';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: process.env.NODE_ENV === 'production' ? '.env' : '../../.env.dev',
+      envFilePath:
+        process.env.NODE_ENV === 'production' ? '.env' : '../../.env.dev',
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],

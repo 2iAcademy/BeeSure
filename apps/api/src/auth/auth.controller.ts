@@ -16,8 +16,9 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import { Public } from '../common/decorators/public.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
-import { RATE_LIMIT } from "../common/constants/app.constants";
-import { AUTH_MESSAGES } from "../common/constants/error-messages.constants";
+import { RATE_LIMIT } from '../common/constants/app.constants';
+import { AUTH_MESSAGES } from '../common/constants/error-messages.constants';
+import { AuthenticatedRequest } from './interfaces/authenticated-request.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -60,14 +61,19 @@ export class AuthController {
   })
   @Post('verify-phone')
   @HttpCode(HttpStatus.OK)
-  async verifyPhone(@Body() verifyPhoneDto: VerifyPhoneDto): Promise<{ message: string }> {
+  async verifyPhone(
+    @Body() verifyPhoneDto: VerifyPhoneDto,
+  ): Promise<{ message: string }> {
     return this.authService.verifyPhone(verifyPhoneDto);
   }
 
   @UseGuards(JwtAuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Request() req, @Body() refreshTokenDto: RefreshTokenDto) {
+  async logout(
+    @Request() req: AuthenticatedRequest,
+    @Body() refreshTokenDto: RefreshTokenDto,
+  ) {
     await this.authService.logout(req.user.id, refreshTokenDto.refreshToken);
     return { message: AUTH_MESSAGES.LOGOUT_SUCCESS };
   }
@@ -75,7 +81,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @Post('logout-all')
   @HttpCode(HttpStatus.OK)
-  async logoutAll(@Request() req) {
+  async logoutAll(@Request() req: AuthenticatedRequest) {
     await this.authService.logoutAll(req.user.id);
     return { message: 'Déconnecté de tous les appareils' };
   }

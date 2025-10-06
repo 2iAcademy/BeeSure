@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 class AuthService {
   final String _baseUrl = dotenv.get('API_BASE_URL');
 
+
   // Méthode pour se connecter
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
