@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../views/success_page.dart';
+import '../views/maps_page.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class LoginViewModel with ChangeNotifier {
@@ -31,7 +32,9 @@ class LoginViewModel with ChangeNotifier {
     if (emailController.text.isEmpty) {
       _emailError = "L'email est obligatoire";
       isValid = false;
-    } else if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(emailController.text)) {
+    } else if (!RegExp(
+      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+    ).hasMatch(emailController.text)) {
       _emailError = "Email invalide";
       isValid = false;
     }
@@ -50,7 +53,6 @@ class LoginViewModel with ChangeNotifier {
 
   // Méthode pour se connecter
   Future<void> login(BuildContext context) async {
-
     if (!_validateFields()) return;
 
     _isLoading = true;
@@ -73,7 +75,7 @@ class LoginViewModel with ChangeNotifier {
       // Redirection vers la page d'accueil
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => SuccessPage()),
+        MaterialPageRoute(builder: (context) => MapView()),
       );
     } else {
       _errorMessage = result['message'];

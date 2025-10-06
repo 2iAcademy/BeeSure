@@ -28,6 +28,7 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+
   flutter:
     sdk: flutter
 
@@ -53,7 +54,11 @@ dependencies:
 
   #Stackage Token
   flutter_secure_storage: ^8.0.0
-
+  
+  # Google maps / Permission localisation
+  google_maps_flutter: ^2.7.0
+  permission_handler: ^11.3.1
+  geolocator: ^11.1.0
 
 dev_dependencies:
   flutter_test:
