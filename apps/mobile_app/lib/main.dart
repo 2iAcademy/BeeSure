@@ -3,6 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'core/config/app_config.dart';
 import 'views/default_home_page.dart';
+import 'views/declare_incident_page.dart';
 
 
 void main() async {
@@ -41,7 +42,12 @@ class MyApp extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
       ),
-      home: const MyHomePage(title: 'BeeSure - Déclaration d\'incident'),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const MyHomePage(title: 'BeeSure - Déclaration d\'incident'),
+        '/declareIncident': (context) => const DeclareIncidentPage(),
+      },
+      //home: const MyHomePage(title: 'BeeSure - Déclaration d\'incident'),
     );
   }
 }
