@@ -6,6 +6,7 @@ class AuthService {
   final String _baseUrl = dotenv.get('API_BASE_URL'); // Remplace par ton URL d'API
   //final String? _apiKey = dotenv.get('API_KEY'); // Récupère la clé API depuis .env
 
+
   // Méthode pour se connecter
   Future<Map<String, dynamic>> login(String email, String password) async {
     try {
