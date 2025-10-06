@@ -8,12 +8,16 @@ class SignupViewModel with ChangeNotifier {
   final TextEditingController firstNameController = TextEditingController();
   final TextEditingController lastNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+  final TextEditingController countryCodeController = TextEditingController(text: '+33');
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
   // État du formulaire
   bool _isLoading = false;
   bool get isLoading => _isLoading;
+
+  bool _obscurePassword = true;
+  bool get obscurePassword => _obscurePassword;
 
   String? _errorMessage;
   String? get errorMessage => _errorMessage;
@@ -89,7 +93,7 @@ class SignupViewModel with ChangeNotifier {
       firstName: firstNameController.text,
       lastName: lastNameController.text,
       email: emailController.text,
-      phone: phoneController.text,
+      phone: '${countryCodeController.text}${phoneController.text}',
       password: passwordController.text,
     );
 
@@ -103,10 +107,19 @@ class SignupViewModel with ChangeNotifier {
       );
     } else {
       _errorMessage = result['message'];
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(_errorMessage!),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
       notifyListeners();
     }
-    // Redirection après inscription réussie
-    // Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+  }
+
+  void togglePasswordVisibility() {
+    _obscurePassword = !_obscurePassword;
+    notifyListeners();
   }
 
   // Nettoyer les controllers
@@ -115,6 +128,7 @@ class SignupViewModel with ChangeNotifier {
     firstNameController.dispose();
     lastNameController.dispose();
     emailController.dispose();
+    countryCodeController.dispose();
     phoneController.dispose();
     passwordController.dispose();
     super.dispose();

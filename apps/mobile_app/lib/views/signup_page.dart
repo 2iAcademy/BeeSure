@@ -67,27 +67,55 @@ class SignupPage extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
-                      controller: viewModel.phoneController,
-                      decoration: InputDecoration(
-                        labelText: "Numéro de téléphone*",
-                        errorText: viewModel.phoneError,
-                        prefixIcon: const Icon(Icons.phone),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10),
+                    Row(
+                      children: [
+                        SizedBox(
+                          width: 80,
+                          child: TextFormField(
+                            controller: viewModel.countryCodeController,
+                            decoration: InputDecoration(
+                              labelText: "Code",
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: TextFormField(
+                            controller: viewModel.phoneController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelText: "Numéro de téléphone*",
+                              errorText: viewModel.phoneError,
+                              prefixIcon: const Icon(Icons.phone),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: viewModel.passwordController,
-                      obscureText: true,
+                      obscureText: viewModel.obscurePassword,
                       decoration: InputDecoration(
                         labelText: "Mot de passe*",
                         errorText: viewModel.passwordError,
                         prefixIcon: const Icon(Icons.lock),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            viewModel.obscurePassword
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
+                          onPressed: viewModel.togglePasswordVisibility,
                         ),
                       ),
                     ),
