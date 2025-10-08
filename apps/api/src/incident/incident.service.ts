@@ -13,11 +13,6 @@ export class IncidentService {
         private readonly incidentRepository: Repository<Incident>,
     ) {}
 
-
-
-    /**
-     * ✅ Créer un nouvel incident
-     */
     async create(create_incident: CreateIncidentDto, userToken?: string){
         try {
 
@@ -27,6 +22,7 @@ export class IncidentService {
             const incident : Incident = this.incidentRepository.create({
                 ...create_incident,
                 declared_at: new Date(),
+                closed_at: new Date(Date.now() + 60 * 60 * 1000),
                 is_closed: false,
                 validation_count: 0,
                 negation_count: 0,
@@ -45,31 +41,21 @@ export class IncidentService {
         }
     }
 
-    /**
-     * 🔍 Récupérer tous les incidents
-     */
     async findAll(): Promise<Incident[]> {
         return this.incidentRepository.find({
             order: { declared_at: 'DESC' },
         });
     }
 
-    /**
-     * 🔍 Récupérer un incident par son ID
-     */
     async findOne(id: number): Promise<Incident> {
         const incident = await this.incidentRepository.findOne({ where: { id } });
 
         if (!incident) {
             throw new NotFoundException(`Incident avec l’ID ${id} introuvable.`);
         }
-
         return incident;
     }
 
-    /**
-     * ✏️ Mettre à jour un incident
-     */
     async update(id: number, updateData: Partial<Incident>): Promise<Incident> {
         const incident = await this.findOne(id);
 
@@ -78,17 +64,11 @@ export class IncidentService {
         return await this.incidentRepository.save(incident);
     }
 
-    /**
-     * ❌ Supprimer un incident
-     */
     async remove(id: number): Promise<void> {
         const incident = await this.findOne(id);
         await this.incidentRepository.remove(incident);
     }
 
-    /**
-     * 🚨 Fermer un incident
-     */
     async closeIncident(id: number): Promise<Incident> {
         const incident = await this.findOne(id);
 
@@ -102,46 +82,68 @@ export class IncidentService {
         return this.incidentRepository.save(incident);
     }
 
-    /**
-     * ✅ Ajouter une validation à un incident
-     */
-    async addValidation(id: number): Promise<Incident> {
+    async addValidation(id: number): Promise<{ message: string; incident: Incident }> {
         const incident = await this.findOne(id);
+        if (!incident) throw new BadRequestException('Incident introuvable');
 
-        incident.validation_count += 1;
+        incident.validation_count = Number(incident.validation_count) + 1;
 
-        // Optionnel : prolonger expire_incident_at selon la logique métier
-        incident.expire_incident_at = this.extendExpiration(
-            incident.expire_incident_at,
-            incident.validation_count,
-        );
+        this.addValidationTime(incident);
 
-        return this.incidentRepository.save(incident);
+        const updatedIncident = await this.incidentRepository.save(incident);
+
+        return {
+            message: `✅ Validation prise en compte. L’incident #${updatedIncident.id} a maintenant ${updatedIncident.validation_count} validation(s).`,
+            incident: updatedIncident,
+        };
     }
 
-    /**
-     * ❌ Ajouter une négation (refus)
-     */
-    async addNegation(id: number): Promise<Incident> {
+    async addNegation(id: number): Promise<{ message: string; incident: Incident }> {
         const incident = await this.findOne(id);
-        incident.negation_count += 1;
-        return this.incidentRepository.save(incident);
+        incident.negation_count = Number(incident.negation_count) + 1;
+
+        this.subtractNegationTime(incident)
+
+        const updatedIncident = await this.incidentRepository.save(incident);
+
+        return {
+            message: `✅ Négation est  prise en compte. L’incident #${updatedIncident.id} a maintenant ${updatedIncident.negation_count} validation(s).`,
+            incident: updatedIncident,
+        };
     }
 
-    /**
-     * ⏳ Extension de la durée de validité selon le nombre de validations
-     */
-    private extendExpiration(currentDate: Date, validationCount: number): Date {
-        const newDate = new Date(currentDate);
 
-        if (validationCount <= 5) {
-            newDate.setMinutes(newDate.getMinutes() + 15);
-        } else if (validationCount <= 10) {
-            newDate.setMinutes(newDate.getMinutes() + 10);
-        } else if (validationCount <= 20) {
-            newDate.setMinutes(newDate.getMinutes() + 5);
+    private addValidationTime(incident: Incident): Incident {
+        const { validation_count } = incident;
+        let additionalMinutes = 0;
+
+        if (validation_count <= 5) additionalMinutes = 15;
+        else if (validation_count <= 10) additionalMinutes = 10;
+        else if (validation_count <= 20) additionalMinutes = 5;
+        else additionalMinutes = 0;
+
+        if (additionalMinutes > 0) {
+            incident.closed_at = new Date(
+                incident.closed_at.getTime() + additionalMinutes * 60000,
+            );
         }
 
-        return newDate;
+        return incident;
+    }
+    private subtractNegationTime(incident: Incident): Incident {
+        const { negation_count } = incident;
+
+        if (negation_count >= 4) {
+            // Clôture immédiate
+            incident.is_closed = true;
+            incident.closed_at = new Date();
+        } else {
+            // Retire 20 minutes par négation
+            incident.closed_at = new Date(
+                incident.closed_at.getTime() - 20 * 60000,
+            );
+        }
+
+        return incident;
     }
 }

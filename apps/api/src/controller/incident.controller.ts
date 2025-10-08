@@ -8,7 +8,7 @@ import {
     Body,
     ParseIntPipe,
     HttpCode,
-    HttpStatus, UseGuards,
+    HttpStatus, UseGuards, Req,
 } from '@nestjs/common';
 import { IncidentService } from './../incident/incident.service';
 import { Incident } from './../incident/entities/incident.entity';
@@ -21,6 +21,7 @@ import {CreateIncidentDto} from "../auth/dto/create-incident.dto";
 export class IncidentController {
     constructor(private readonly incidentService: IncidentService) {}
 
+
     @Public()
     @UseGuards(ThrottlerGuard)
     @Throttle({
@@ -31,25 +32,22 @@ export class IncidentController {
         return this.incidentService.create(createIncidentDto);
     }
 
-    /**
-     * 🔍 Récupérer tous les incidents
-     */
-    @Get()
+    @Public()
+    @Get('all')
     async findAll(): Promise<Incident[]> {
         return this.incidentService.findAll();
     }
 
-    /**
-     * 🔍 Récupérer un incident par ID
-     */
+
+    @Public()
     @Get(':id')
-    async findOne(@Param('id', ParseIntPipe) id: number): Promise<Incident> {
+    async findOne(
+        @Param('id', ParseIntPipe) id: number): Promise<Incident> {
+
         return this.incidentService.findOne(id);
     }
 
-    /**
-     * ✏️ Mettre à jour un incident
-     */
+    @Public()
     @Patch(':id')
     async update(
         @Param('id', ParseIntPipe) id: number,
@@ -58,36 +56,26 @@ export class IncidentController {
         return this.incidentService.update(id, updateData);
     }
 
-    /**
-     * ❌ Supprimer un incident
-     */
     @Delete(':id')
     @HttpCode(HttpStatus.NO_CONTENT)
     async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
         return this.incidentService.remove(id);
     }
 
-    /**
-     * 🚨 Fermer un incident
-     */
     @Patch(':id/close')
     async closeIncident(@Param('id', ParseIntPipe) id: number): Promise<Incident> {
         return this.incidentService.closeIncident(id);
     }
 
-    /**
-     * ✅ Ajouter une validation à un incident
-     */
+    @Public()
     @Patch(':id/validate')
-    async addValidation(@Param('id', ParseIntPipe) id: number): Promise<Incident> {
+    async addValidation(@Param('id', ParseIntPipe) id: number): Promise<{ message: string; incident: Incident }> {
         return this.incidentService.addValidation(id);
     }
 
-    /**
-     * ❌ Ajouter une négation (refus)
-     */
+    @Public()
     @Patch(':id/negate')
-    async addNegation(@Param('id', ParseIntPipe) id: number): Promise<Incident> {
+    async addNegation(@Param('id', ParseIntPipe) id: number): Promise<{ message: string; incident: Incident }> {
         return this.incidentService.addNegation(id);
     }
 }

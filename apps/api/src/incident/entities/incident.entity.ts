@@ -30,8 +30,8 @@ export class Incident {
     declared_at: Date;
 
     @Index('incident_closed_at_index')
-    @Column({ type: 'timestamp', nullable: true })
-    closed_at: Date | null;
+    @Column({ type: 'timestamp', nullable: false })
+    closed_at: Date ;
 
     @Column({ type: 'text', nullable: false })
     description: string;
