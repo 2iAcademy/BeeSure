@@ -13,7 +13,7 @@ fi
 
 echo ""
 
-echo "Arrêt des services et uppression des volumes"
+echo "Arrêt des services et suppression des volumes"
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml down -v
 
 echo "Nettoyage des conteneurs orphelins"

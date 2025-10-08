@@ -8,21 +8,27 @@ import {
     Body,
     ParseIntPipe,
     HttpCode,
-    HttpStatus,
+    HttpStatus, UseGuards,
 } from '@nestjs/common';
 import { IncidentService } from './../incident/incident.service';
 import { Incident } from './../incident/entities/incident.entity';
+import {Public} from "../common/decorators/public.decorator";
+import {Throttle, ThrottlerGuard} from "@nestjs/throttler";
+import {RATE_LIMIT} from "../common/constants/app.constants";
+import {CreateIncidentDto} from "../auth/dto/create-incident.dto";
 
 @Controller('incidents')
 export class IncidentController {
     constructor(private readonly incidentService: IncidentService) {}
 
-    /**
-     * ✅ Créer un nouvel incident
-     */
-    @Post()
-    async create(@Body() data: Partial<Incident>): Promise<Incident> {
-        return this.incidentService.create(data);
+    @Public()
+    @UseGuards(ThrottlerGuard)
+    @Throttle({
+        default: { limit: RATE_LIMIT.AUTH_LIMIT, ttl: RATE_LIMIT.AUTH_TTL },
+    })
+    @Post( 'createincident')
+    async create(@Body() createIncidentDto: CreateIncidentDto) {
+        return this.incidentService.create(createIncidentDto);
     }
 
     /**

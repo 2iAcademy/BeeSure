@@ -7,9 +7,11 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import {IncidentModule} from './incident/incident.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { User } from './users/entities/user.entity';
 import { RATE_LIMIT } from './common/constants/app.constants';
+import {Incident} from "./incident/entities/incident.entity";
 
 @Module({
   imports: [
@@ -26,7 +28,7 @@ import { RATE_LIMIT } from './common/constants/app.constants';
         username: configService.get('DATABASE_USERNAME'),
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
-        entities: [User],
+        entities: [User, Incident],
         synchronize: configService.get('DATABASE_SYNC', false),
         logging: configService.get('DATABASE_LOGGING', false),
       }),
@@ -43,6 +45,7 @@ import { RATE_LIMIT } from './common/constants/app.constants';
     }),
     AuthModule,
     UsersModule,
+    IncidentModule,
   ],
   controllers: [AppController],
   providers: [

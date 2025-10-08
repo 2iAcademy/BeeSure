@@ -1,30 +1,46 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {Injectable, NotFoundException, BadRequestException, UnauthorizedException, Logger} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Incident } from './entities/incident.entity';
+import {CreateIncidentDto} from "./../auth/dto/create-incident.dto";
 
 @Injectable()
 export class IncidentService {
+
+    private readonly logger = new Logger(IncidentService.name);
     constructor(
         @InjectRepository(Incident)
         private readonly incidentRepository: Repository<Incident>,
     ) {}
 
+
+
     /**
      * ✅ Créer un nouvel incident
      */
-    async create(data: Partial<Incident>): Promise<Incident> {
+    async create(create_incident: CreateIncidentDto, userToken?: string){
         try {
-            const incident = this.incidentRepository.create({
-                ...data,
+
+            /* if (!userToken) {
+                 throw new UnauthorizedException('Token utilisateur manquant.');
+             }*/
+            const incident : Incident = this.incidentRepository.create({
+                ...create_incident,
                 declared_at: new Date(),
                 is_closed: false,
                 validation_count: 0,
                 negation_count: 0,
             });
 
+            console.log(incident)
+
+            this.logger.log(`Création d’un incident pour l’utilisateur ${create_incident.user_id}`);
+          console.log(`Détails incident : ${JSON.stringify(incident, null, 2)}`);
+
             return await this.incidentRepository.save(incident);
         } catch (error) {
+            console.log(error)
+
             throw new BadRequestException('Erreur lors de la création de l’incident.');
         }
     }
