@@ -1,56 +1,66 @@
 import 'package:flutter/material.dart';
-//import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../services/incident_service.dart';
+import '../features/incidents/models/incident_model.dart';
+import '/../services/incident_service.dart';
 
-class DeclareIncidentViewModel extends ChangeNotifier {
+class IncidentViewModel with ChangeNotifier {
   final IncidentService _incidentService = IncidentService();
 
-  //GoogleMapController? mapController;
-  //LatLng currentPosition = const LatLng(48.8566, 2.3522); // Paris par défaut
+  // Controllers
+  final TextEditingController typeController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  final TextEditingController latController = TextEditingController();
+  final TextEditingController longController = TextEditingController();
 
-  String? selectedIncident;
-  bool _isLoading = false;
-  bool get isLoading => _isLoading;
+  bool isLoading = false;
+  String? errorMessage;
+  String? successMessage;
 
-  final List<Map<String, dynamic>> incidentTypes = [
-    {"label": "Incendie", "icon": Icons.local_fire_department, "color": Colors.red},
-    {"label": "Catastrophe", "icon": Icons.waves, "color": Colors.blueGrey},
-    {"label": "Vol", "icon": Icons.person_outline, "color": Colors.purple},
-    {"label": "Agression", "icon": Icons.warning_rounded, "color": Colors.orange},
-    {"label": "Animal", "icon": Icons.pets, "color": Colors.green},
-    {"label": "Armes", "icon": Icons.gavel, "color": Colors.grey},
-    {"label": "Autre", "icon": Icons.error_outline, "color": Colors.amber},
-  ];
+  Future<void> submitIncident(String userId) async {
+    if (!_validateForm()) return;
 
-  void selectIncident(String label) {
-    selectedIncident = label;
+    isLoading = true;
+    notifyListeners();
+
+    final incident = CreateIncident(
+      userId: userId,
+      typeId: typeController.text.split(','),
+      description: descriptionController.text,
+      locationLatt: double.tryParse(latController.text) ?? 0,
+      locationLong: double.tryParse(longController.text) ?? 0,
+    );
+
+    final result = await _incidentService.createIncident(incident);
+
+    isLoading = false;
+
+    if (result['success']) {
+      successMessage = "✅ Incident créé avec succès";
+      errorMessage = null;
+      clearForm();
+    } else {
+      errorMessage = result['message'];
+      successMessage = null;
+    }
+
     notifyListeners();
   }
 
-  Future<void> submitIncident(BuildContext context) async {
-    if (selectedIncident == null) return;
+  bool _validateForm() {
+    if (typeController.text.isEmpty ||
+        descriptionController.text.isEmpty ||
+        latController.text.isEmpty ||
+        longController.text.isEmpty) {
+      errorMessage = "Tous les champs sont obligatoires";
+      notifyListeners();
+      return false;
+    }
+    return true;
+  }
 
-    _isLoading = true;
-    notifyListeners();
-
-    /*final result = await _incidentService.reportIncident(
-      type: selectedIncident!,
-      latitude: currentPosition.latitude,
-      longitude: currentPosition.longitude,
-    );*/
-
-    _isLoading = false;
-    notifyListeners();
-
-    /*if (result['success']) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Incident signalé avec succès')),
-      );
-      Navigator.pop(context);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(result['message'] ?? 'Erreur inconnue')),
-      );
-    }*/
+  void clearForm() {
+    typeController.clear();
+    descriptionController.clear();
+    latController.clear();
+    longController.clear();
   }
 }
