@@ -59,11 +59,11 @@ class _MyHomePageState extends State<MyHomePage> {
       },
       borderRadius: BorderRadius.circular(16), // effet ripple propre
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20), // padding interne
+        padding: EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         decoration: BoxDecoration(
-          color: Colors.blue.shade100, // couleur du fond
-          borderRadius: BorderRadius.circular(16), // bord arrondi
-          border: Border.all(color: Color(0xFFFD4141), width: 2), // bordure optionnelle
+          color: Colors.blue.shade100,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Color(0xFFFD4141), width: 2),
           boxShadow: [
             BoxShadow(
               color: Colors.black12,
@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              "assets/incident.png", // ← ton image ici (local)
+              "assets/incident.png",
               width: 32,
               height: 32,
             ),

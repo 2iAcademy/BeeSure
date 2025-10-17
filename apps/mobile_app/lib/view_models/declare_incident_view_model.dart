@@ -15,6 +15,28 @@ class IncidentViewModel with ChangeNotifier {
   String? errorMessage;
   String? successMessage;
 
+  int currentStep = 1;
+  String? selectedType;
+
+  void selectIncidentType(String type) {
+    selectedType = type;
+    notifyListeners();
+  }
+
+  void nextStep() {
+    if (currentStep < 2) {
+      currentStep++;
+      notifyListeners();
+    }
+  }
+
+  void previousStep() {
+    if (currentStep > 1) {
+      currentStep--;
+      notifyListeners();
+    }
+  }
+
   Future<void> submitIncident(String userId) async {
     if (!_validateForm()) return;
 
