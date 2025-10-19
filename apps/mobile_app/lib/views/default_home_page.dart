@@ -1,129 +1,158 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:provider/provider.dart';
-import '/core/config/app_config.dart';
 import '/views/login_page.dart';
 import '/views/signup_page.dart';
 
-
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  Widget Login_button(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        );
-      },
-      child: const Text("Connect toi !",
-          style: TextStyle(
-        fontSize: 28,
-        color: Colors.green,
-      )),
-    );
-  }
-
-  Widget Signup_button(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const SignupPage()),
-        );
-      },
-      child: const Text("Créer ton compte ! ",
-          style: TextStyle(
-            fontSize: 28,
-            color: Colors.purple,
-          )),
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    final theme = Theme.of(context);
+    const beeYellow = Color(0xFFFFB624);
+    const beeDark = Color(0xFF1F1F1F);
+
     return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, c) {
+            final isTall = c.maxHeight > 700;
 
-            const Text('Bienvenue sur BEESURE l\'application pour rester en vie sereinement',
-              style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.blue,
-            ),
-              textAlign: TextAlign.center,),
+            return Column(
+              children: [
+                const SizedBox(height: 24),
 
-            const SizedBox(height: 50),
-            Login_button(context),
+                // --- Logo + accroche (centrés)
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Pastille ronde + logo PNG
+                      Container(
+                        width: 140,
+                        height: 140,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Image.asset(
+                            'assets/logo_beesure-transparent.png',
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
 
-            const SizedBox(height: 50), // Espacement
-            Signup_button(context), // Appel du bouton
-          ],
+                      Text(
+                        "Bienvenue sur BeeSure!",
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: beeDark,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        "Be safe, BeeSure",
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                // --- Boutons (ancrés en bas)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _PrimaryButton(
+                        label: "CONNEXION",
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const LoginPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      _PrimaryButton(
+                        label: "REJOIGNEZ-NOUS",
+                        filled: false, // variante outline
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const SignupPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(height: isTall ? 8 : 0),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
+  }
+}
+
+class _PrimaryButton extends StatelessWidget {
+  const _PrimaryButton({
+    required this.label,
+    required this.onPressed,
+    this.filled = true,
+  });
+
+  final String label;
+  final VoidCallback onPressed;
+  final bool filled;
+
+  @override
+  Widget build(BuildContext context) {
+    const beeYellow = Color(0xFFFFB624);
+    final baseStyle = ElevatedButton.styleFrom(
+      minimumSize: const Size.fromHeight(54),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      elevation: filled ? 2 : 0,
+      textStyle: const TextStyle(
+        letterSpacing: 1.1,
+        fontWeight: FontWeight.w700,
+      ),
+    );
+
+    return filled
+        ? ElevatedButton(
+            style: baseStyle.copyWith(
+              backgroundColor: WidgetStateProperty.all(beeYellow),
+              foregroundColor: WidgetStateProperty.all(Colors.black87),
+              shadowColor: WidgetStateProperty.all(const Color(0x33000000)),
+            ),
+            onPressed: onPressed,
+            child: Text(label),
+          )
+        : OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size.fromHeight(54),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              side: const BorderSide(color: beeYellow, width: 2),
+              textStyle: const TextStyle(
+                letterSpacing: 1.1,
+                fontWeight: FontWeight.w700,
+              ),
+              foregroundColor: Colors.black87,
+            ),
+            onPressed: onPressed,
+            child: Text(label),
+          );
   }
 }

@@ -43,7 +43,7 @@ class LoginViewModel with ChangeNotifier {
       _passwordError = "Le mot de passe est obligatoire";
       isValid = false;
     } else if (passwordController.text.length < 6) {
-      _passwordError = "Le mot de passe est incorècte (min 6 caractère)";
+      _passwordError = "Le mot de passe est incorrect (min 6 caractère)";
       isValid = false;
     }
 
