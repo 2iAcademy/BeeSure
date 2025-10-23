@@ -70,7 +70,7 @@ class LoginViewModel with ChangeNotifier {
       await _storage.write(key: 'accessToken', value: accessTokenAPI);
       await _storage.write(key: 'refreshToken', value: refreshTokenAPI);
 
-      // Redirection vers la page d'accueil
+      // Redirection
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => SuccessPage()),
