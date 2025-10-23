@@ -163,6 +163,7 @@ class CreateIncidentPage extends StatelessWidget {
                                                   );
                                                 },
                                               ).then((_) {
+                                                viewModel.clearForm();
                                                 // ✅ Quand la pop-up se ferme, on ferme le bottom sheet
                                                 Navigator.of(context).pop();
                                               });
