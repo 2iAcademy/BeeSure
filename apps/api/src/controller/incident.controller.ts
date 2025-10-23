@@ -27,8 +27,10 @@ export class IncidentController {
     @Throttle({
         default: { limit: RATE_LIMIT.AUTH_LIMIT, ttl: RATE_LIMIT.AUTH_TTL },
     })
-    @Post( 'createincident')
+    @Post( 'create_incident')
     async create(@Body() createIncidentDto: CreateIncidentDto) {
+
+        console.log("hello j'envoie un incident");
         return this.incidentService.create(createIncidentDto);
     }
 

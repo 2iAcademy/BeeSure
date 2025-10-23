@@ -16,9 +16,9 @@ export class IncidentService {
     async create(create_incident: CreateIncidentDto, userToken?: string){
         try {
 
-            /* if (!userToken) {
+             if (!userToken) {
                  throw new UnauthorizedException('Token utilisateur manquant.');
-             }*/
+             }
             const incident : Incident = this.incidentRepository.create({
                 ...create_incident,
                 declared_at: new Date(),

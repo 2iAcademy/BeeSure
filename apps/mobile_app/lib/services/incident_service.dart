@@ -9,11 +9,11 @@ class IncidentService {
   Future<Map<String, dynamic>> createIncident(CreateIncident incident) async {
     try {
       final response = await http.post(
-        Uri.parse('$_baseUrl/incidents'),
+        Uri.parse('$_baseUrl/incidents/create_incident'),
         headers: {
           'Content-Type': 'application/json',
         },
-        body: jsonEncode(incident.toJson()),
+        body:incident.toJson(),
       );
 
       if (response.statusCode == 201) {
