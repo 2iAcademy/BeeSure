@@ -26,7 +26,7 @@ class IncidentService {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body:jsonEncode(incident.toJson()),
+        body:incident.toJson(),
       );
 
       if (response.statusCode == 201) {

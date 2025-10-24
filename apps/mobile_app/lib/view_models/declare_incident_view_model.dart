@@ -73,7 +73,7 @@ class IncidentViewModel with ChangeNotifier {
     );
 
     final result = await _incidentService.createIncident(incident);
-    //isLoading = false;
+    isLoading = false;
 
     if (result['success']) {
       successMessage = "✅ Incident créé avec succès";
