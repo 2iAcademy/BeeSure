@@ -72,10 +72,8 @@ class IncidentViewModel with ChangeNotifier {
       locationLong: -4.008256,
     );
 
-    print("✅ Incident envoyé au backend : ${incident.toJson()}");
-
     final result = await _incidentService.createIncident(incident);
-    isLoading = false;
+    //isLoading = false;
 
     if (result['success']) {
       successMessage = "✅ Incident créé avec succès";

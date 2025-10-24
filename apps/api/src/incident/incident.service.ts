@@ -13,12 +13,9 @@ export class IncidentService {
         private readonly incidentRepository: Repository<Incident>,
     ) {}
 
-    async create(create_incident: CreateIncidentDto, userToken?: string){
+    async create(create_incident: CreateIncidentDto){
         try {
 
-             if (!userToken) {
-                 throw new UnauthorizedException('Token utilisateur manquant.');
-             }
             const incident : Incident = this.incidentRepository.create({
                 ...create_incident,
                 declared_at: new Date(),
