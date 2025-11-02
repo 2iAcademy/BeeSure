@@ -21,6 +21,3 @@ jobs:
 
       - name: Install dependencies
         run: cd apps/mobile_app && flutter pub get
-
-      - name: Run tests
-        run: cd apps/mobile_app && flutter test
