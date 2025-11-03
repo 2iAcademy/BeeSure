@@ -1,42 +1,89 @@
-name: CI/CD-Dev-Staging
+name: Deploy Staging
 
 on:
   push:
-    branches: [ "staging" ]
-  pull_request:
-    branches: [ "staging" ]
-  # Exécution manuelle depuis l’onglet Actions
+    branches: [staging]
   workflow_dispatch:
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
-  test-and-deploy:
+  # Tests Flutter Mobile
+  test-flutter:
+    uses: ./.github/workflows/flutter-test.yaml
+
+  # Build APK Android pour Staging
+  build-apk:
+    needs: [test-flutter]
+    uses: ./.github/workflows/flutter-build-apk.yaml
+    with:
+      artifact-name: android-apk-staging
+      retention-days: 30
+
+  deploy-staging:
+    name: Deploy to Staging
     runs-on: ubuntu-latest
+    environment:
+      name: staging
+      url: ${{ secrets.STAGING_URL }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Deploy to staging server
+        uses: appleboy/ssh-action@v1.2.2
         with:
-          node-version: '18'
-          cache: 'npm'
-          cache-dependency-path: apps/api/package-lock.json
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            cd /opt/beesure
 
-      - name: Install API dependencies
-        run: cd apps/api && npm ci
+            # Créer le fichier .env avec les secrets
+            cat > .env << EOF
+            GITHUB_REPOSITORY=${{ github.repository }}
+            IMAGE_TAG=staging
+            NODE_ENV=staging
 
-      - name: Run API tests
-        run: cd apps/api && npm test
+            # Database PostgreSQL
+            POSTGRES_DB=${{ secrets.STAGING_POSTGRES_DB }}
+            POSTGRES_USER=${{ secrets.STAGING_POSTGRES_USER }}
+            POSTGRES_PASSWORD=${{ secrets.STAGING_POSTGRES_PASSWORD }}
 
-      - name: Run API e2e tests
-        run: cd apps/api && npm run test:e2e
+            # MongoDB
+            MONGO_ROOT_USER=${{ secrets.STAGING_MONGO_ROOT_USER }}
+            MONGO_ROOT_PASSWORD=${{ secrets.STAGING_MONGO_ROOT_PASSWORD }}
+            MONGO_DB_NAME=${{ secrets.STAGING_MONGO_DB_NAME }}
 
-      - name: Run API linting
-        run: cd apps/api && npm run lint
+            # JWT
+            JWT_SECRET=${{ secrets.STAGING_JWT_SECRET }}
+            JWT_EXPIRATION=${{ secrets.STAGING_JWT_EXPIRATION }}
 
-      - name: Build API
-        run: cd apps/api && npm run build
+            # Rate Limiting
+            RATE_LIMIT_TTL=${{ secrets.STAGING_RATE_LIMIT_TTL }}
+            RATE_LIMIT_MAX=${{ secrets.STAGING_RATE_LIMIT_MAX }}
 
-      - name: Echo deployment message
-        run: echo "Tests réussis - Déploiement sur la branche ${{ github.ref_name }}"
+            # CORS
+            CORS_ORIGIN=${{ secrets.STAGING_CORS_ORIGIN }}
+
+            # Spark
+            SPARK_WORKER_CORES=${{ secrets.STAGING_SPARK_WORKER_CORES }}
+            SPARK_WORKER_MEMORY=${{ secrets.STAGING_SPARK_WORKER_MEMORY }}
+            EOF
+
+            # Login au registry GitHub
+            echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            # Pull les nouvelles images
+            docker compose -f docker-compose.prod.yml pull
+
+            # Redémarrer les services
+            docker compose -f docker-compose.prod.yml up -d
+
+            # Nettoyer les anciennes images
+            docker image prune -af
+
+            echo "Déploiement staging terminé !"
