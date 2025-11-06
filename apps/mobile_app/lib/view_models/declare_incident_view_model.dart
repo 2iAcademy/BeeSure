@@ -3,17 +3,18 @@ import '../features/incidents/models/incident_model.dart';
 import '../features/enum/incident_type_enum.dart';
 import '../services/incident_service.dart';
 import '../views/success_page.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
 
 class IncidentViewModel with ChangeNotifier {
   final IncidentService _incidentService = IncidentService();
-
-  // ✅ Le type sélectionné avec ENUM
-  IncidentTypeEnum? selectedType;
-
   // Controllers
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController latController = TextEditingController();
   final TextEditingController longController = TextEditingController();
+
+  // ✅ Le type sélectionné avec ENUM
+  IncidentTypeEnum? selectedType;
 
   // ✅ Étapes du formulaire
   int currentStep = 1;
@@ -64,9 +65,11 @@ class IncidentViewModel with ChangeNotifier {
     isLoading = true;
     notifyListeners();
 
+    final typeIncident = [selectedType!.name][0];
+
     final incident = CreateIncident(
-      userId: userId,
-      typeId: [selectedType!.name],
+      userId: "d3d89823-4a77-46ca-94de-48e446c3cd51",
+      typeId: typeIncident,
       description: descriptionController.text,
       locationLatt: 5.349391,
       locationLong: -4.008256,

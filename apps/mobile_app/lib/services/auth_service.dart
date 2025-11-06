@@ -78,19 +78,4 @@ class AuthService {
     }
   }
 
-  // Méthode pour sauvegarder le token (ex: dans SharedPreferences)
-  Future<void> saveToken(String token) async {
-    // Ici, tu peux utiliser shared_preferences pour stocker le token
-    // Exemple :
-    // final prefs = await SharedPreferences.getInstance();
-    // await prefs.setString('auth_token', token);
-  }
-
-  // Méthode pour récupérer le token
-  Future<String?> getToken() async {
-    // Exemple :
-    // final prefs = await SharedPreferences.getInstance();
-    // return prefs.getString('auth_token');
-    return null;
-  }
 }

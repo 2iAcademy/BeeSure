@@ -9,16 +9,16 @@ class IncidentService {
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<Map<String, dynamic>> createIncident(CreateIncident incident) async {
-    print("✅ Incident envoyé au backend : ${incident.toJson()}");
+    print("✅ Incident envoyé au backend : ${jsonEncode(incident.toJson())}");
 
     try {
 
       final token = await _storage.read(key: 'accessToken');
-      print("Token JWT: ${token}");
+      print("🔑 Token : $token");
 
-     /* if (token == null) {
+      if (token == null) {
         return {'success': false, 'message': 'Token manquant. Veuillez vous reconnecter.'};
-      }*/
+      }
       print("je suis dans le try !");
       final response = await http.post(
         Uri.parse('$_baseUrl/incidents/create_incident'),
@@ -26,7 +26,7 @@ class IncidentService {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $token',
         },
-        body:incident.toJson(),
+        body:jsonEncode(incident.toJson()),
       );
 
       if (response.statusCode == 201) {

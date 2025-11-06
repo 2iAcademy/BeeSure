@@ -4,7 +4,7 @@ import '../../../core/models/base_model.dart';
 @JsonSerializable()
 class CreateIncident {
   final String userId;
-  final List<String> typeId;
+  final String typeId;
   final String description;
   final double locationLatt;
   final double locationLong;

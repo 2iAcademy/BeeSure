@@ -36,7 +36,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   
   # HTTP client pour communiquer avec l'API NestJS
-  http: ^1.1.0
+  http: ^1.5.0
   
   # Gestion d'état et injection de dépendances
   provider: ^6.1.1
@@ -54,7 +54,6 @@ dependencies:
   #Stackage Token
   flutter_secure_storage: ^8.0.0
 
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -67,8 +66,9 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   
   # Code generation pour JSON
-  build_runner: ^2.4.7
+  build_runner: ^2.10.1
   json_serializable: ^6.7.1
+  mockito: ^5.5.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
