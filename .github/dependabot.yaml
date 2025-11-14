@@ -12,9 +12,9 @@ updates:
   directory: "/apps/api"
   schedule:
       interval: "weekly"  
-      labels:
-      - "dependencies"
-      - "API - backend"
+  labels:
+    - "dependencies"
+    - "API - backend"
   commit-message:
       prefix: "deps(nest API)"
       include: "scope"
@@ -24,7 +24,7 @@ updates:
   directory: "/apps/dashboard" 
   schedule:
     interval: "weekly"
-    labels:
+  labels:
       - "dependencies"
       - "dashboard"
   commit-message:
