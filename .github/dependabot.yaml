@@ -6,12 +6,14 @@ updates:
   directory: "/"
   schedule:
     interval: "weekly"
+  target-branch: "dev"
       
   # --- Backend NestJS (npm) ---
 - package-ecosystem: "npm"
   directory: "/apps/api"
   schedule:
       interval: "weekly"  
+  target-branch: "dev"
   labels:
     - "dependencies"
     - "API - backend"
@@ -24,6 +26,7 @@ updates:
   directory: "/apps/dashboard" 
   schedule:
     interval: "weekly"
+  target-branch: "dev"
   labels:
       - "dependencies"
       - "dashboard"
@@ -36,6 +39,7 @@ updates:
   directory: "/apps/mobile_app"
   schedule:
       interval: "weekly"
+    target-branch: "dev"
   labels:
       - "dependencies"
       - "mobile"
