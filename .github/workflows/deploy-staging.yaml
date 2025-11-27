@@ -31,51 +31,53 @@ jobs:
           echo "Deploying version: $VERSION"
 
       - name: Deploy to staging server
-        env:
-          SSH_HOST: ${{ secrets.SSH_HOST }}
-          SSH_USER: ${{ secrets.SSH_USER }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
-          VERSION: ${{ steps.version.outputs.version }}
-          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
-          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
-          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
-          MONGO_ROOT_USER: ${{ secrets.MONGO_ROOT_USER }}
-          MONGO_ROOT_PASSWORD: ${{ secrets.MONGO_ROOT_PASSWORD }}
-          MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
-          JWT_SECRET: ${{ secrets.JWT_SECRET }}
-          JWT_EXPIRATION: ${{ secrets.JWT_EXPIRATION }}
-          RATE_LIMIT_TTL: ${{ secrets.RATE_LIMIT_TTL }}
-          RATE_LIMIT_MAX: ${{ secrets.RATE_LIMIT_MAX }}
-          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
-        run: |
-          # Setup SSH
-          mkdir -p ~/.ssh
-          echo "$SSH_KEY" > ~/.ssh/deploy_key
-          chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
-
-          # Deploy via SSH
-          ssh -i ~/.ssh/deploy_key $SSH_USER@$SSH_HOST << ENDSSH
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
             set -e
             cd ~/beesure
 
             echo "Creating .env file..."
-            cat > .env << EOF
-          GITHUB_REPOSITORY=${{ github.repository }}
-          IMAGE_TAG=$VERSION
-          NODE_ENV=staging
-          POSTGRES_DB=$POSTGRES_DB
-          POSTGRES_USER=$POSTGRES_USER
-          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
-          MONGO_ROOT_USER=$MONGO_ROOT_USER
-          MONGO_ROOT_PASSWORD=$MONGO_ROOT_PASSWORD
-          MONGO_DB_NAME=$MONGO_DB_NAME
-          JWT_SECRET=$JWT_SECRET
-          JWT_EXPIRATION=$JWT_EXPIRATION
-          RATE_LIMIT_TTL=$RATE_LIMIT_TTL
-          RATE_LIMIT_MAX=$RATE_LIMIT_MAX
-          CORS_ORIGIN=$CORS_ORIGIN
-          EOF
+            cat > .env << 'EOF'
+            GITHUB_REPOSITORY=${{ github.repository }}
+            IMAGE_TAG=${{ steps.version.outputs.version }}
+            NODE_ENV=staging
+            PORT=3000
+            API_PREFIX=api/v1
+
+            # Database PostgreSQL
+            DATABASE_NAME=${{ secrets.DATABASE_NAME }}
+            DATABASE_USERNAME=${{ secrets.DATABASE_USERNAME }}
+            DATABASE_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+            DATABASE_SYNC=false
+            DATABASE_LOGGING=false
+
+            # Database MongoDB
+            MONGO_ROOT_USER=${{ secrets.MONGO_ROOT_USER }}
+            MONGO_ROOT_PASSWORD=${{ secrets.MONGO_ROOT_PASSWORD }}
+            MONGO_DB_NAME=${{ secrets.MONGO_DB_NAME }}
+
+            # JWT & Auth
+            JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}
+            JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
+            JWT_ACCESS_EXPIRES_IN=15m
+            JWT_REFRESH_EXPIRES_IN=7d
+
+            # Security
+            BCRYPT_ROUNDS=12
+
+            # Rate Limiting
+            THROTTLE_TTL=${{ secrets.THROTTLE_TTL }}
+            THROTTLE_LIMIT=${{ secrets.THROTTLE_LIMIT }}
+            AUTH_THROTTLE_TTL=${{ secrets.AUTH_THROTTLE_TTL }}
+            AUTH_THROTTLE_LIMIT=${{ secrets.AUTH_THROTTLE_LIMIT }}
+
+            # CORS
+            CORS_ORIGIN=${{ secrets.CORS_ORIGIN }}
+            EOF
 
             chmod 600 .env
 
@@ -89,32 +91,10 @@ jobs:
             docker compose -f docker-compose.prod.yml down
             docker compose -f docker-compose.prod.yml up -d
 
-            echo "Waiting for services to be healthy..."
-            MAX_WAIT=120
-            ELAPSED=0
-
-            while [ \$ELAPSED -lt \$MAX_WAIT ]; do
-              if docker compose -f docker-compose.prod.yml ps | grep -q "healthy"; then
-                echo "Services are healthy!"
-                break
-              fi
-
-              if [ \$ELAPSED -ge \$MAX_WAIT ]; then
-                echo "Healthcheck timeout after \${MAX_WAIT}s"
-                docker compose -f docker-compose.prod.yml logs --tail=50
-                exit 1
-              fi
-
-              sleep 5
-              ELAPSED=\$((ELAPSED + 5))
-              echo "Waiting... \${ELAPSED}s/\${MAX_WAIT}s"
-            done
-
             echo "Cleaning old images..."
             docker image prune -af --filter "until=720h"
 
             echo "Deployment successful!"
-          ENDSSH
 
       - name: Deployment summary
         run: |

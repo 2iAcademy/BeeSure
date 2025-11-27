@@ -4,9 +4,9 @@ services:
     container_name: beesure_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_HOST_AUTH_METHOD: scram-sha-256
       POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
     volumes:
@@ -14,7 +14,7 @@ services:
     networks:
       - beesure_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USERNAME} -d ${DATABASE_NAME}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -54,9 +54,9 @@ services:
     container_name: beesure_liquibase
     restart: "no"
     environment:
-      LIQUIBASE_COMMAND_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
-      LIQUIBASE_COMMAND_USERNAME: ${POSTGRES_USER}
-      LIQUIBASE_COMMAND_PASSWORD: ${POSTGRES_PASSWORD}
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://postgres:5432/${DATABASE_NAME}
+      LIQUIBASE_COMMAND_USERNAME: ${DATABASE_USERNAME}
+      LIQUIBASE_COMMAND_PASSWORD: ${DATABASE_PASSWORD}
       LIQUIBASE_COMMAND_CHANGELOG_FILE: changelog.xml
     depends_on:
       postgres:
@@ -75,26 +75,40 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV}
-      API_PORT: 3000
-      API_HOST: 0.0.0.0
+      PORT: ${PORT:-3000}
+      API_PREFIX: ${API_PREFIX:-api/v1}
 
       # Database PostgreSQL
-      POSTGRES_HOST: postgres
-      POSTGRES_PORT: 5432
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USERNAME: ${DATABASE_USERNAME}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_SYNC: ${DATABASE_SYNC:-false}
+      DATABASE_LOGGING: ${DATABASE_LOGGING:-false}
 
       # Database MongoDB
+      MONGO_HOST: mongodb
+      MONGO_PORT: 27017
+      MONGO_DB_NAME: ${MONGO_DB_NAME}
+      MONGO_ROOT_USER: ${MONGO_ROOT_USER}
+      MONGO_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
       MONGO_URL: mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/${MONGO_DB_NAME}?authSource=admin
 
       # JWT & Auth
-      JWT_SECRET: ${JWT_SECRET}
-      JWT_EXPIRATION: ${JWT_EXPIRATION}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_ACCESS_EXPIRES_IN: ${JWT_ACCESS_EXPIRES_IN}
+      JWT_REFRESH_EXPIRES_IN: ${JWT_REFRESH_EXPIRES_IN}
 
-      # Security & Rate Limiting
-      RATE_LIMIT_TTL: ${RATE_LIMIT_TTL}
-      RATE_LIMIT_MAX: ${RATE_LIMIT_MAX}
+      # Security
+      BCRYPT_ROUNDS: ${BCRYPT_ROUNDS}
+
+      # Rate Limiting
+      THROTTLE_TTL: ${THROTTLE_TTL}
+      THROTTLE_LIMIT: ${THROTTLE_LIMIT}
+      AUTH_THROTTLE_TTL: ${AUTH_THROTTLE_TTL}
+      AUTH_THROTTLE_LIMIT: ${AUTH_THROTTLE_LIMIT}
 
       # CORS
       CORS_ORIGIN: ${CORS_ORIGIN}
