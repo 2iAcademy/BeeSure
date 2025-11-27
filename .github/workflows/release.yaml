@@ -230,11 +230,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download APK
-        uses: actions/download-artifact@v4
-        with:
-          name: beesure-${{ needs.validate.outputs.version }}
-          path: ./artifacts
+#      - name: Download APK
+#        uses: actions/download-artifact@v4
+#        with:
+#          name: beesure-${{ needs.validate.outputs.version }}
+#          path: ./artifacts
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
