@@ -149,6 +149,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Convert repository name to lowercase
+        id: repo
+        run: echo "repo_lower=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -166,8 +170,8 @@ jobs:
           file: docker/Dockerfile.api.prod
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/api:${{ needs.validate.outputs.version }}
-            ghcr.io/${{ github.repository }}/api:latest
+            ghcr.io/${{ steps.repo.outputs.repo_lower }}/api:${{ needs.validate.outputs.version }}
+            ghcr.io/${{ steps.repo.outputs.repo_lower }}/api:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -178,8 +182,8 @@ jobs:
           file: docker/Dockerfile.liquibase
           push: true
           tags: |
-            ghcr.io/${{ github.repository }}/liquibase:${{ needs.validate.outputs.version }}
-            ghcr.io/${{ github.repository }}/liquibase:latest
+            ghcr.io/${{ steps.repo.outputs.repo_lower }}/liquibase:${{ needs.validate.outputs.version }}
+            ghcr.io/${{ steps.repo.outputs.repo_lower }}/liquibase:latest
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
