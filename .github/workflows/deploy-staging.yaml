@@ -19,6 +19,9 @@ jobs:
     environment: staging
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Determine version
         id: version
         run: |
@@ -33,6 +36,14 @@ jobs:
       - name: Convert repository name to lowercase
         id: repo
         run: echo "repo_lower=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Copy docker-compose to server
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          scp -i ~/.ssh/deploy_key docker-compose.prod.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/beesure/
 
       - name: Deploy to staging server
         uses: appleboy/ssh-action@v1.2.2
