@@ -205,23 +205,23 @@ jobs:
           channel: 'stable'
           cache: true
 
-      - name: Install dependencies
-        run: flutter pub get
-
-      - name: Build APK
-        run: flutter build apk --release
-
-      - name: Rename APK
-        run: |
-          mv build/app/outputs/flutter-apk/app-release.apk \
-             build/app/outputs/flutter-apk/beesure-${{ needs.validate.outputs.version }}.apk
-
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: beesure-${{ needs.validate.outputs.version }}
-          path: apps/mobile_app/build/app/outputs/flutter-apk/beesure-${{ needs.validate.outputs.version }}.apk
-          retention-days: 90
+#      - name: Install dependencies
+#        run: flutter pub get
+#
+#      - name: Build APK
+#        run: flutter build apk --release
+#
+#      - name: Rename APK
+#        run: |
+#          mv build/app/outputs/flutter-apk/app-release.apk \
+#             build/app/outputs/flutter-apk/beesure-${{ needs.validate.outputs.version }}.apk
+#
+#      - name: Upload APK artifact
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: beesure-${{ needs.validate.outputs.version }}
+#          path: apps/mobile_app/build/app/outputs/flutter-apk/beesure-${{ needs.validate.outputs.version }}.apk
+#          retention-days: 90
 
   create-release:
     runs-on: ubuntu-latest
