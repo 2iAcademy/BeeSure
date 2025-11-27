@@ -102,4 +102,3 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Version:** ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Environment:** Staging" >> $GITHUB_STEP_SUMMARY
-          echo "- **URL:** ${{ vars.STAGING_URL }}" >> $GITHUB_STEP_SUMMARY

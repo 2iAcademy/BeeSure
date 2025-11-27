@@ -133,4 +133,3 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "- **Version:** ${{ needs.prepare.outputs.version }}" >> $GITHUB_STEP_SUMMARY
           echo "- **Environment:** Production" >> $GITHUB_STEP_SUMMARY
-          echo "- **URL:** ${{ vars.PRODUCTION_URL }}" >> $GITHUB_STEP_SUMMARY
