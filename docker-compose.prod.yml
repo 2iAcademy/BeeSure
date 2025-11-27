@@ -2,11 +2,13 @@ services:
   postgres:
     image: postgis/postgis:17-3.5-alpine
     container_name: beesure_postgres
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_HOST_AUTH_METHOD: md5
+      POSTGRES_HOST_AUTH_METHOD: scram-sha-256
+      POSTGRES_INITDB_ARGS: "--auth-host=scram-sha-256"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -21,11 +23,12 @@ services:
       driver: "json-file"
       options:
         max-size: "10m"
-        max-file: "3"
+        max-file: "5"
 
   mongodb:
     image: mongo:8.0.11
     container_name: beesure_mongodb
+    restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
@@ -44,11 +47,12 @@ services:
       driver: "json-file"
       options:
         max-size: "10m"
-        max-file: "3"
+        max-file: "5"
 
   liquibase:
     image: ghcr.io/${GITHUB_REPOSITORY}/liquibase:${IMAGE_TAG}
     container_name: beesure_liquibase
+    restart: "no"
     environment:
       LIQUIBASE_COMMAND_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB}
       LIQUIBASE_COMMAND_USERNAME: ${POSTGRES_USER}
@@ -63,11 +67,12 @@ services:
       driver: "json-file"
       options:
         max-size: "10m"
-        max-file: "3"
+        max-file: "5"
 
   api:
     image: ghcr.io/${GITHUB_REPOSITORY}/api:${IMAGE_TAG}
     container_name: beesure_api
+    restart: unless-stopped
     environment:
       NODE_ENV: ${NODE_ENV}
       API_PORT: 3000
@@ -110,65 +115,22 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
     logging:
       driver: "json-file"
       options:
         max-size: "10m"
-        max-file: "3"
-
-  spark-master:
-    image: apache/spark:4.0.0-java21-python3
-    container_name: spark-master
-    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.master.Master"]
-    environment:
-      SPARK_NO_DAEMONIZE: "true"
-    networks:
-      - beesure_network
-    volumes:
-      - spark_data:/opt/spark/data
-      - spark_logs:/opt/spark/logs
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 30s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
-
-  spark-worker-1:
-    image: apache/spark:4.0.0-java21-python3
-    container_name: spark-worker-1
-    command: ["/opt/spark/bin/spark-class", "org.apache.spark.deploy.worker.Worker", "spark://spark-master:7077"]
-    environment:
-      SPARK_NO_DAEMONIZE: "true"
-      SPARK_WORKER_CORES: ${SPARK_WORKER_CORES}
-      SPARK_WORKER_MEMORY: ${SPARK_WORKER_MEMORY}
-    depends_on:
-      spark-master:
-        condition: service_healthy
-    networks:
-      - beesure_network
-    volumes:
-      - spark_data:/opt/spark/data
-      - spark_logs:/opt/spark/logs
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "3"
+        max-file: "5"
 
 volumes:
   postgres_data:
     driver: local
   mongodb_data:
-    driver: local
-  spark_data:
-    driver: local
-  spark_logs:
     driver: local
 
 networks:
