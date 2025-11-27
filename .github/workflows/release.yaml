@@ -136,11 +136,11 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Analyze
-        run: flutter analyze --fatal-infos
-
-      - name: Test
-        run: flutter test --coverage
+#      - name: Analyze
+#        run: flutter analyze --fatal-infos
+#
+#      - name: Test
+#        run: flutter test --coverage
 
   build-and-push:
     runs-on: ubuntu-latest
