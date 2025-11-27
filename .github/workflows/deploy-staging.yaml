@@ -1,0 +1,125 @@
+name: Deploy to Staging
+
+on:
+  push:
+    tags:
+      - 'v*.*.*-rc.*'
+      - 'v*.*.*-beta.*'
+      - 'v*.*.*-alpha.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to deploy (e.g., 1.0.0-rc.1)'
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: staging
+
+    steps:
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Deploying version: $VERSION"
+
+      - name: Deploy to staging server
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          VERSION: ${{ steps.version.outputs.version }}
+          POSTGRES_DB: ${{ secrets.POSTGRES_DB }}
+          POSTGRES_USER: ${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          MONGO_ROOT_USER: ${{ secrets.MONGO_ROOT_USER }}
+          MONGO_ROOT_PASSWORD: ${{ secrets.MONGO_ROOT_PASSWORD }}
+          MONGO_DB_NAME: ${{ secrets.MONGO_DB_NAME }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          JWT_EXPIRATION: ${{ secrets.JWT_EXPIRATION }}
+          RATE_LIMIT_TTL: ${{ secrets.RATE_LIMIT_TTL }}
+          RATE_LIMIT_MAX: ${{ secrets.RATE_LIMIT_MAX }}
+          CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+        run: |
+          # Setup SSH
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H $SSH_HOST >> ~/.ssh/known_hosts
+
+          # Deploy via SSH
+          ssh -i ~/.ssh/deploy_key $SSH_USER@$SSH_HOST << ENDSSH
+            set -e
+            cd ~/beesure
+
+            echo "Creating .env file..."
+            cat > .env << EOF
+          GITHUB_REPOSITORY=${{ github.repository }}
+          IMAGE_TAG=$VERSION
+          NODE_ENV=staging
+          POSTGRES_DB=$POSTGRES_DB
+          POSTGRES_USER=$POSTGRES_USER
+          POSTGRES_PASSWORD=$POSTGRES_PASSWORD
+          MONGO_ROOT_USER=$MONGO_ROOT_USER
+          MONGO_ROOT_PASSWORD=$MONGO_ROOT_PASSWORD
+          MONGO_DB_NAME=$MONGO_DB_NAME
+          JWT_SECRET=$JWT_SECRET
+          JWT_EXPIRATION=$JWT_EXPIRATION
+          RATE_LIMIT_TTL=$RATE_LIMIT_TTL
+          RATE_LIMIT_MAX=$RATE_LIMIT_MAX
+          CORS_ORIGIN=$CORS_ORIGIN
+          EOF
+
+            chmod 600 .env
+
+            echo "Logging into GitHub Container Registry..."
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+
+            echo "Pulling images..."
+            docker compose -f docker-compose.prod.yml pull
+
+            echo "Restarting services..."
+            docker compose -f docker-compose.prod.yml down
+            docker compose -f docker-compose.prod.yml up -d
+
+            echo "Waiting for services to be healthy..."
+            MAX_WAIT=120
+            ELAPSED=0
+
+            while [ \$ELAPSED -lt \$MAX_WAIT ]; do
+              if docker compose -f docker-compose.prod.yml ps | grep -q "healthy"; then
+                echo "Services are healthy!"
+                break
+              fi
+
+              if [ \$ELAPSED -ge \$MAX_WAIT ]; then
+                echo "Healthcheck timeout after \${MAX_WAIT}s"
+                docker compose -f docker-compose.prod.yml logs --tail=50
+                exit 1
+              fi
+
+              sleep 5
+              ELAPSED=\$((ELAPSED + 5))
+              echo "Waiting... \${ELAPSED}s/\${MAX_WAIT}s"
+            done
+
+            echo "Cleaning old images..."
+            docker image prune -af --filter "until=720h"
+
+            echo "Deployment successful!"
+          ENDSSH
+
+      - name: Deployment summary
+        run: |
+          echo "### Staging Deployment Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Version:** ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Environment:** Staging" >> $GITHUB_STEP_SUMMARY
+          echo "- **URL:** ${{ vars.STAGING_URL }}" >> $GITHUB_STEP_SUMMARY
