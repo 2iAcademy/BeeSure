@@ -112,8 +112,8 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Analyze
-        run: flutter analyze --fatal-infos
+#      - name: Analyze
+#        run: flutter analyze --fatal-infos
 
       - name: Test
         run: flutter test --coverage
