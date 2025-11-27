@@ -28,8 +28,8 @@ FROM node:22-alpine AS production
 
 WORKDIR /app
 
-# Installer curl pour les healthchecks
-RUN apk add --no-cache curl
+# Installer curl pour les healthchecks et dumb-init pour la gestion des signaux
+RUN apk add --no-cache curl dumb-init
 
 # Copier uniquement les dépendances de production depuis deps stage
 COPY --from=deps /app/node_modules ./node_modules
@@ -48,5 +48,6 @@ EXPOSE 3000
 ENV NODE_ENV=production \
     PORT=3000
 
-# Commande de démarrage
+# Commande de démarrage avec dumb-init pour gérer correctement les signaux
+ENTRYPOINT ["dumb-init", "--"]
 CMD ["node", "dist/main.js"]

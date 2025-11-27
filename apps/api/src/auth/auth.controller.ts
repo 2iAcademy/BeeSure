@@ -29,9 +29,10 @@ export class AuthController {
   @Throttle({
     default: { limit: RATE_LIMIT.AUTH_LIMIT, ttl: RATE_LIMIT.AUTH_TTL },
   })
-  @Post('signup')
-  async signup(@Body() signupDto: SignupDto): Promise<AuthResponseDto> {
-    return this.authService.signup(signupDto);
+  @Post('login')
+  @HttpCode(HttpStatus.OK)
+  async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
+    return this.authService.login(loginDto);
   }
 
   @Public()
@@ -39,10 +40,9 @@ export class AuthController {
   @Throttle({
     default: { limit: RATE_LIMIT.AUTH_LIMIT, ttl: RATE_LIMIT.AUTH_TTL },
   })
-  @Post('login')
-  @HttpCode(HttpStatus.OK)
-  async login(@Body() loginDto: LoginDto): Promise<AuthResponseDto> {
-    return this.authService.login(loginDto);
+  @Post('signup')
+  async signup(@Body() signupDto: SignupDto): Promise<AuthResponseDto> {
+    return this.authService.signup(signupDto);
   }
 
   @Public()
