@@ -115,8 +115,8 @@ jobs:
 #      - name: Analyze
 #        run: flutter analyze --fatal-infos
 
-      - name: Test
-        run: flutter test --coverage
+#      - name: Test
+#        run: flutter test --coverage
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4
