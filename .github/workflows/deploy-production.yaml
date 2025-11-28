@@ -61,9 +61,23 @@ jobs:
     environment: production
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
       - name: Convert repository name to lowercase
         id: repo
         run: echo "repo_lower=$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Copy files to server
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+          # Copy docker-compose and nginx config
+          scp -i ~/.ssh/deploy_key docker-compose.prod.yml ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/beesure/
+          scp -i ~/.ssh/deploy_key -r docker/nginx ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/beesure/docker/
 
       - name: Deploy to production server
         uses: appleboy/ssh-action@v1.2.2
@@ -115,6 +129,20 @@ jobs:
             EOF
 
             chmod 600 .env
+
+            echo "Checking SSL certificates..."
+            if [ ! -f docker/nginx/ssl/cert.pem ] || [ ! -f docker/nginx/ssl/key.pem ]; then
+              echo "⚠️  WARNING: SSL certificates not found!"
+              echo "For production, you should use Let's Encrypt certificates."
+              echo "Generating temporary self-signed certificates for now..."
+              cd docker/nginx
+              chmod +x generate-ssl-cert.sh
+              ./generate-ssl-cert.sh
+              cd ~/beesure
+              echo "⚠️  Remember to replace with proper Let's Encrypt certificates!"
+            else
+              echo "SSL certificates found"
+            fi
 
             echo "Logging into GitHub Container Registry..."
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
