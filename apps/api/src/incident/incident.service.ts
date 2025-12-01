@@ -3,18 +3,24 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Incident } from './entities/incident.entity';
 import {CreateIncidentDto} from "./../auth/dto/create-incident.dto";
+import {JwtPayload} from "../auth/auth.service";
+import {authorize} from "passport";
 
 @Injectable()
 export class IncidentService {
 
     private readonly logger = new Logger(IncidentService.name);
+    private readonly jwt : JwtPayload;
     constructor(
         @InjectRepository(Incident)
         private readonly incidentRepository: Repository<Incident>,
     ) {}
 
-    async create(create_incident: CreateIncidentDto){
+    async create(create_incident: CreateIncidentDto, req : Request){
         try {
+
+           console.log(req.headers['authorization'])
+            // String user_id = jwt.decode()
 
             const incident : Incident = this.incidentRepository.create({
                 ...create_incident,
@@ -26,9 +32,6 @@ export class IncidentService {
             });
 
             console.log(incident)
-
-            this.logger.log(`Création d’un incident pour l’utilisateur ${create_incident.user_id}`);
-          console.log(`Détails incident : ${JSON.stringify(incident, null, 2)}`);
 
             return await this.incidentRepository.save(incident);
         } catch (error) {

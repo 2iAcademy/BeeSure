@@ -88,4 +88,25 @@ class LoginViewModel with ChangeNotifier {
       super.dispose();
     }
   }
+
+  // Méthodes pour les tests
+  void setIsLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+
+  void setEmailError(String? error) {
+    _emailError = error;
+    notifyListeners();
+  }
+
+  void setPasswordError(String? error) {
+    _passwordError = error;
+    notifyListeners();
+  }
+
+  void setErrorMessage(String? error) {
+    _errorMessage = error;
+    notifyListeners();
+  }
 }

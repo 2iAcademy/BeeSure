@@ -7,7 +7,7 @@ export class CreateIncidentDto {
 
     @IsString()
     @IsNotEmpty()
-    type_id: string[];
+    type_id: string;
 
     @IsString()
     @IsNotEmpty()
@@ -20,5 +20,4 @@ export class CreateIncidentDto {
     @IsNumber()
     @IsNotEmpty()
     location_long: number;
-
 }

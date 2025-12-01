@@ -22,8 +22,8 @@ export class Incident {
     user_id: string;
 
     @Index('incident_type_id_index')
-    @Column({ type: 'simple-array', nullable: true })
-    type_id: string[];
+    @Column({ type: 'text', nullable: true })
+    type_id: string;
 
     @Index('incident_declared_at_index')
     @Column({ type: 'timestamp', nullable: false })
@@ -31,7 +31,7 @@ export class Incident {
 
     @Index('incident_closed_at_index')
     @Column({ type: 'timestamp', nullable: false })
-    closed_at: Date ;
+    closed_at: Date;
 
     @Column({ type: 'text', nullable: false })
     description: string;

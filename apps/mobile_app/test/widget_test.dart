@@ -65,7 +65,5 @@ void main() {
     expect(emailLabelFinder, findsOneWidget);
     expect(passwordLabelFinder, findsOneWidget);
 
-
-
   });
 }

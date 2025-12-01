@@ -28,10 +28,10 @@ export class IncidentController {
         default: { limit: RATE_LIMIT.AUTH_LIMIT, ttl: RATE_LIMIT.AUTH_TTL },
     })
     @Post( 'create_incident')
-    async create(@Body() createIncidentDto: CreateIncidentDto) {
+    async create(@Body() createIncidentDto: CreateIncidentDto, @Req() req) {
 
         console.log("hello j'envoie un incident");
-        return this.incidentService.create(createIncidentDto);
+        return this.incidentService.create(createIncidentDto, req);
     }
 
     @Public()
@@ -39,7 +39,6 @@ export class IncidentController {
     async findAll(): Promise<Incident[]> {
         return this.incidentService.findAll();
     }
-
 
     @Public()
     @Get(':id')
